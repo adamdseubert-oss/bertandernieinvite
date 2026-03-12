@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Bert & Ernie Invitational</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root { --red:#c0392b; --blue:#1a3a6b; --gold:#f0a500; --dark:#0e1a0e; --light:#f5f5f5; }
+  body { font-family:'Arial Black',Arial,sans-serif; background:#0e1a0e; color:var(--light);
+    background-image: repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.025) 39px,rgba(255,255,255,.025) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.025) 39px,rgba(255,255,255,.025) 40px); }
+
+  nav { display:flex; justify-content:space-between; align-items:center; padding:14px 40px; background:#0a1520; border-bottom:3px solid var(--gold); position:sticky; top:0; z-index:100; }
+  .logo-nav { display:flex; align-items:center; gap:12px; }
+  .logo-text { font-size:1rem; color:var(--gold); letter-spacing:1px; text-transform:uppercase; line-height:1.2; }
+  .logo-text small { display:block; font-size:.6rem; color:#888; letter-spacing:2px; }
+  .nav-links { display:flex; gap:20px; align-items:center; }
+  .nav-links a { color:#ccc; text-decoration:none; font-size:.8rem; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:color .2s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+  .admin-btn { background:#1a2a1a; border:1px solid #3a5a3a; color:#aaa !important; padding:6px 14px; border-radius:4px; font-size:.7rem !important; }
+  .admin-btn:hover { background:#2a3a2a; color:var(--gold) !important; }
+
+  section { display:none; padding:60px 40px; max-width:1100px; margin:0 auto; }
+  section.active { display:block; }
+  #hero { padding:0; max-width:100%; }
+
+  .hero-inner { text-align:center; padding:60px 40px 80px; background:linear-gradient(180deg,rgba(10,21,32,.97) 0%,rgba(10,20,10,.95) 100%); position:relative; overflow:hidden; }
+  .hero-inner::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(240,165,0,.08) 0%,transparent 70%); pointer-events:none; }
+  .hero-inner > * { position:relative; z-index:1; }
+  .hero-logo { width:min(300px,75vw); margin:0 auto 28px; display:block; filter:drop-shadow(0 8px 32px rgba(240,165,0,.3)); }
+  .hero-tagline { color:var(--gold); letter-spacing:4px; font-size:.8rem; text-transform:uppercase; margin-bottom:28px; font-style:italic; }
+  .vs-bar { display:flex; justify-content:center; align-items:center; gap:30px; margin-bottom:36px; }
+  .team-badge { padding:14px 32px; font-size:1.3rem; letter-spacing:2px; font-weight:900; text-transform:uppercase; border-radius:4px; }
+  .team-a { background:var(--red); } .team-b { background:var(--blue); }
+  .vs { font-size:2rem; color:var(--gold); font-weight:900; }
+  .event-info { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
+  .info-chip { background:#111; border:1px solid #2a2a2a; border-radius:4px; padding:12px 20px; font-size:.85rem; color:#ccc; }
+  .info-chip strong { color:var(--gold); display:block; font-size:.65rem; text-transform:uppercase; margin-bottom:4px; letter-spacing:2px; }
+
+  .draft-banner { margin:40px 20px 0; max-width:900px; margin-left:auto; margin-right:auto; background:linear-gradient(135deg,#0a1a0a,#0f2010); border:1px solid #2a4a2a; border-top:3px solid var(--gold); border-radius:8px; overflow:hidden; }
+  .draft-inner { display:flex; flex-wrap:wrap; gap:24px; padding:28px 32px; align-items:center; justify-content:space-between; }
+  .draft-left { flex:1; min-width:240px; text-align:left; }
+  .draft-label { font-size:.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+  .draft-title { font-size:1.8rem; text-transform:uppercase; margin-bottom:4px; }
+  .draft-title span { color:var(--gold); }
+  .draft-date { font-size:.8rem; color:#aaa; letter-spacing:1px; margin-bottom:12px; }
+  .draft-desc { font-size:.82rem; color:#999; line-height:1.6; font-weight:normal; margin-bottom:16px; }
+  .draft-desc strong { color:#ccc; }
+  .zoom-btn { display:inline-block; background:#2d6a4f; color:#fff; padding:10px 22px; border-radius:4px; font-size:.8rem; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border:1px solid #3a8a66; transition:background .2s; cursor:pointer; }
+  .zoom-btn:hover { background:#3a8a66; }
+  .draft-captains { display:flex; align-items:center; gap:16px; flex-shrink:0; }
+  .captain-card { text-align:center; }
+  .cap-avatar { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:900; margin:0 auto 8px; }
+  .cap-avatar.red { background:var(--red); border:2px solid #e07070; }
+  .cap-avatar.blue { background:var(--blue); border:2px solid #7090e0; }
+  .cap-name { font-size:.75rem; font-weight:900; white-space:nowrap; }
+  .cap-team { font-size:.65rem; color:#888; margin-top:2px; }
+  .draft-vs { font-size:.9rem; font-weight:900; color:var(--gold); letter-spacing:2px; }
+
+  .sec-title { font-size:2rem; text-transform:uppercase; letter-spacing:3px; margin-bottom:8px; }
+  .sec-title span { color:var(--gold); }
+  .sec-line { width:60px; height:4px; background:var(--gold); margin-bottom:40px; }
+
+  /* LEADERBOARD */
+  .score-hero { display:flex; justify-content:center; align-items:stretch; margin-bottom:40px; border-radius:8px; overflow:hidden; border:2px solid #333; }
+  .score-side { flex:1; padding:30px; text-align:center; }
+  .score-side.red { background:linear-gradient(135deg,#3a0a0a,#1a0505); }
+  .score-side.blue { background:linear-gradient(135deg,#0a1a3a,#050d1a); }
+  .score-team-name { font-size:.8rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; }
+  .score-side.red .score-team-name { color:#e07070; }
+  .score-side.blue .score-team-name { color:#7090e0; }
+  .score-number { font-size:5rem; font-weight:900; line-height:1; }
+  .score-side.red .score-number { color:var(--red); }
+  .score-side.blue .score-number { color:#4a7fd4; }
+  .score-divider { width:2px; background:#333; display:flex; align-items:center; justify-content:center; }
+  .score-divider span { background:#0e1a0e; padding:8px 4px; color:var(--gold); font-size:.7rem; writing-mode:vertical-rl; text-transform:uppercase; }
+  .rounds-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+  .round-card { background:#111; border:1px solid #2a2a2a; border-radius:6px; overflow:hidden; }
+  .round-card-header { padding:12px 16px; display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; }
+  .round-name { font-size:.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--gold); }
+  .round-status { font-size:.65rem; padding:3px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; }
+  .status-complete { background:#1a3a1a; color:#4caf50; }
+  .status-live { background:#3a1a1a; color:#f44336; animation:pulse 1.5s infinite; }
+  .status-upcoming { background:#2a2a2a; color:#888; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+  .round-score { display:flex; justify-content:space-around; align-items:center; padding:16px; }
+  .r-score { font-size:1.8rem; font-weight:900; }
+  .r-score.red { color:var(--red); } .r-score.blue { color:#4a7fd4; }
+  .r-dash { color:#555; font-size:1.2rem; }
+  .round-format { font-size:.7rem; color:#666; text-align:center; padding-bottom:12px; letter-spacing:1px; text-transform:uppercase; }
+
+  /* MATCHUPS */
+  .round-label { font-size:.75rem; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin:24px 0 8px; border-left:3px solid var(--gold); padding-left:12px; }
+  .matchups-grid { display:grid; gap:8px; margin-bottom:8px; }
+  .matchup-card { background:#111; border:1px solid #222; border-radius:6px; overflow:hidden; display:grid; grid-template-columns:1fr auto 1fr; }
+  .mplayer { padding:12px 14px; display:flex; align-items:center; gap:8px; }
+  .mplayer.right { justify-content:flex-end; }
+  .pnum { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.6rem; font-weight:900; flex-shrink:0; }
+  .pnum.red { background:var(--red); } .pnum.blue { background:var(--blue); }
+  .pname { font-size:.82rem; }
+  .pname small { display:block; color:#555; font-size:.68rem; font-weight:normal; }
+  .match-res { display:flex; align-items:center; justify-content:center; padding:0 14px; background:#0a0a0a; gap:6px; font-size:.85rem; min-width:80px; }
+  .rs { font-weight:900; }
+  .rs.red { color:var(--red); } .rs.blue { color:#4a7fd4; } .rs.tie { color:var(--gold); }
+  .sep { color:#333; }
+
+  /* PLAYERS */
+  .players-split { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .team-section-title { font-size:.75rem; letter-spacing:3px; text-transform:uppercase; padding:10px 16px; margin-bottom:12px; border-radius:4px; }
+  .team-section-title.red { background:linear-gradient(90deg,var(--red),transparent); }
+  .team-section-title.blue { background:linear-gradient(90deg,var(--blue),transparent); }
+  .player-card { background:#111; border:1px solid #1e1e1e; border-radius:8px; margin-bottom:14px; overflow:hidden; transition:border-color .2s,transform .15s; }
+  .player-card:hover { border-color:#444; transform:translateY(-2px); }
+  .pc-top { display:flex; align-items:center; gap:14px; padding:16px 16px 10px; }
+  .pc-avatar { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:900; flex-shrink:0; border:3px solid #2a2a2a; overflow:hidden; background:#1a1a1a; }
+  .pc-avatar.red { border-color:var(--red); } .pc-avatar.blue { border-color:var(--blue); }
+  .pc-header { flex:1; }
+  .pc-name { font-size:1rem; font-weight:900; }
+  .pc-meta { display:flex; gap:8px; align-items:center; margin-top:4px; flex-wrap:wrap; }
+  .pc-hdcp { font-size:.7rem; color:#aaa; background:#1e1e1e; padding:2px 8px; border-radius:20px; }
+  .pc-record { font-size:.7rem; font-weight:900; color:var(--gold); background:#1e1600; padding:2px 8px; border-radius:20px; }
+  .pc-badge { font-size:.65rem; padding:2px 8px; border-radius:20px; font-weight:700; }
+  .badge-captain-red { background:#3a0a0a; color:#ff7070; }
+  .badge-captain-blue { background:#0a1a3a; color:#70a0ff; }
+  .badge-special { background:#2a1a00; color:var(--gold); }
+  .pc-bio { padding:0 16px 14px; font-size:.8rem; color:#999; line-height:1.6; font-weight:normal; border-top:1px solid #1a1a1a; margin-top:4px; padding-top:10px; }
+
+  /* INFO */
+  .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; margin-bottom:40px; }
+  .info-card { background:#111; border:1px solid #222; border-radius:6px; padding:24px; border-top:3px solid var(--gold); }
+  .info-card h3 { font-size:.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+  .info-card p { color:#ccc; font-size:.9rem; line-height:1.7; font-weight:normal; }
+  .schedule-table { width:100%; border-collapse:collapse; }
+  .schedule-table th { text-align:left; font-size:.7rem; letter-spacing:2px; text-transform:uppercase; color:#888; padding:10px 16px; border-bottom:1px solid #222; }
+  .schedule-table td { padding:12px 16px; border-bottom:1px solid #1a1a1a; font-size:.85rem; font-weight:normal; }
+  .format-tag { display:inline-block; padding:3px 10px; border-radius:20px; font-size:.65rem; letter-spacing:1px; text-transform:uppercase; }
+  .fmt-foursomes { background:#1a2a3a; color:#7090e0; }
+  .fmt-fourballs { background:#1a3a1a; color:#70c070; }
+  .fmt-singles { background:#3a2a1a; color:#e0a070; }
+
+  /* ADMIN */
+  #admin { max-width:900px; }
+  .admin-login { background:#111; border:1px solid #333; border-radius:8px; padding:40px; max-width:400px; margin:0 auto; text-align:center; }
+  .admin-login h2 { color:var(--gold); margin-bottom:8px; font-size:1.2rem; letter-spacing:2px; }
+  .admin-login p { color:#888; font-size:.8rem; font-weight:normal; margin-bottom:24px; }
+  .admin-panel { display:none; }
+  .admin-panel.visible { display:block; }
+  .admin-section { background:#111; border:1px solid #222; border-radius:8px; padding:24px; margin-bottom:24px; }
+  .admin-section h3 { color:var(--gold); font-size:.8rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #222; }
+  .form-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:12px; align-items:end; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group label { font-size:.65rem; letter-spacing:2px; text-transform:uppercase; color:#888; }
+  input, select { background:#1a1a1a; border:1px solid #333; color:#fff; padding:8px 12px; border-radius:4px; font-size:.85rem; font-family:inherit; width:100%; }
+  input:focus, select:focus { outline:none; border-color:var(--gold); }
+  .btn { padding:9px 20px; border-radius:4px; font-size:.75rem; letter-spacing:1px; text-transform:uppercase; font-family:inherit; cursor:pointer; border:none; font-weight:900; transition:opacity .2s; }
+  .btn:hover { opacity:.85; }
+  .btn-gold { background:var(--gold); color:#000; }
+  .btn-red { background:var(--red); color:#fff; }
+  .btn-sm { padding:6px 14px; font-size:.7rem; }
+  .save-notice { color:#4caf50; font-size:.75rem; margin-left:12px; display:none; }
+  .matchup-admin-row { display:grid; grid-template-columns:1fr 1fr 80px 80px 120px; gap:8px; align-items:center; margin-bottom:8px; font-size:.8rem; }
+  .matchup-admin-row span { color:#888; font-size:.75rem; }
+  .logout-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+  .logout-bar h2 { color:var(--gold); font-size:1.1rem; letter-spacing:2px; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-nav">
+    <div class="logo-text">Bert &amp; Ernie Invitational<small>Colorado Springs, CO</small></div>
+  </div>
+  <div class="nav-links">
+    <a onclick="show('hero')" class="active" id="nav-hero">Home</a>
+    <a onclick="show('leaderboard')" id="nav-leaderboard">Scores</a>
+    <a onclick="show('brackets')" id="nav-brackets">Matchups</a>
+    <a onclick="show('players')" id="nav-players">Players</a>
+    <a onclick="show('info')" id="nav-info">Info</a>
+    <a onclick="show('admin')" id="nav-admin" class="admin-btn">⚙️ Admin</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tagline">"When Harry's Away... The Boys Will Still Play"</div>
+    <div class="vs-bar">
+      <div class="team-badge team-a" id="hero-red-name">Team Red</div>
+      <div class="vs">VS</div>
+      <div class="team-badge team-b" id="hero-blue-name">Team Blue</div>
+    </div>
+    <div class="event-info">
+      <div class="info-chip"><strong>Dates</strong>July 23–26, 2026</div>
+      <div class="info-chip"><strong>Location</strong>Colorado Springs, CO</div>
+      <div class="info-chip"><strong>Format</strong>Ryder Cup · 4 Rounds</div>
+      <div class="info-chip"><strong>Players</strong>16 · 8v8</div>
+    </div>
+    <div class="draft-banner">
+      <div class="draft-inner">
+        <div class="draft-left">
+          <div class="draft-label">🎉 Coming Up</div>
+          <div class="draft-title">The <span>Team Draft</span></div>
+          <div class="draft-date">Cinco de Mayo · May 5th, 2026 · 6:00 PM</div>
+          <div class="draft-desc">Captains <strong>Eric Fitzgerald</strong> (Blue) and <strong>Aaron Whitener</strong> (Red) will go head-to-head to build their rosters in the official Bert &amp; Ernie Invitational Team Draft. Who gets picked first? Who gets picked last? Will Aaron be coherent? Tune in to find out.</div>
+          <a class="zoom-btn" id="zoom-link" href="#" onclick="return zoomClick()">📹 Join on Zoom</a>
+        </div>
+        <div class="draft-captains">
+          <div class="captain-card"><div class="cap-avatar red">AW</div><div class="cap-name">Aaron Whitener</div><div class="cap-team">🔴 Red Captain</div></div>
+          <div class="draft-vs">DRAFT</div>
+          <div class="captain-card"><div class="cap-avatar blue">EF</div><div class="cap-name">Eric Fitzgerald</div><div class="cap-team">🔵 Blue Captain</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCORES -->
+<section id="leaderboard">
+  <div class="sec-title">Live <span>Scores</span></div>
+  <div class="sec-line"></div>
+  <div class="score-hero">
+    <div class="score-side red"><div class="score-team-name" id="lb-red-name">Team Red</div><div class="score-number" id="lb-red-score">0</div></div>
+    <div class="score-divider"><span>Points</span></div>
+    <div class="score-side blue"><div class="score-team-name" id="lb-blue-name">Team Blue</div><div class="score-number" id="lb-blue-score">0</div></div>
+  </div>
+  <div class="rounds-grid" id="rounds-display"></div>
+  <p style="color:#555;font-size:.75rem;text-align:center;margin-top:24px;font-weight:normal">Win = 1 pt · Halve = ½ pt · Loss = 0 pts · 10½ pts needed to win The Cup</p>
+</section>
+
+<!-- MATCHUPS -->
+<section id="brackets">
+  <div class="sec-title">Match<span>ups</span></div>
+  <div class="sec-line"></div>
+  <div id="matchups-display"></div>
+</section>
+
+<!-- PLAYERS -->
+<section id="players">
+  <div class="sec-title">The <span>Players</span></div>
+  <div class="sec-line"></div>
+  <div class="players-split">
+    <div><div class="team-section-title red" id="red-team-title">🔴 Team Red</div><div id="red-players"></div></div>
+    <div><div class="team-section-title blue" id="blue-team-title">🔵 Team Blue</div><div id="blue-players"></div></div>
+  </div>
+</section>
+
+<!-- INFO -->
+<section id="info">
+  <div class="sec-title">Event <span>Info</span></div>
+  <div class="sec-line"></div>
+  <div class="info-grid">
+    <div class="info-card"><h3>📅 Dates</h3><p>July 23–26, 2026<br><br>July 23 — Arrival &amp; Practice<br>July 24 — Rounds 1 &amp; 2<br>July 25 — Rounds 3 &amp; 4<br>July 26 — Celebration &amp; Departure</p></div>
+    <div class="info-card"><h3>📍 Location</h3><p>Colorado Springs, CO<br><br>Venue TBD<br>Pikes Peak as your backdrop.</p></div>
+    <div class="info-card"><h3>🏆 Format</h3><p>Ryder Cup–style match play. Win = 1 pt, Halve = ½ pt, Loss = 0.<br><br>First to <strong>10½ points</strong> wins The Cup.</p></div>
+    <div class="info-card"><h3>📋 Rules</h3><p>Standard USGA rules apply. Handicaps used. Concessions at captain's discretion. No gimmes inside 6 inches... unless agreed upon.</p></div>
+  </div>
+  <div class="sec-title" style="font-size:1.2rem;margin-bottom:8px">Round <span>Schedule</span></div>
+  <div class="sec-line" style="margin-bottom:20px"></div>
+  <table class="schedule-table">
+    <thead><tr><th>Round</th><th>Format</th><th>Day</th><th>Matches</th><th>Points</th></tr></thead>
+    <tbody>
+      <tr><td>Round 1 — Morning</td><td><span class="format-tag fmt-foursomes">Foursomes</span></td><td>July 24</td><td>4</td><td>4</td></tr>
+      <tr><td>Round 2 — Afternoon</td><td><span class="format-tag fmt-fourballs">Four-Balls</span></td><td>July 24</td><td>4</td><td>4</td></tr>
+      <tr><td>Round 3 — Morning</td><td><span class="format-tag fmt-foursomes">Foursomes</span></td><td>July 25</td><td>4</td><td>4</td></tr>
+      <tr><td>Round 4 — Afternoon</td><td><span class="format-tag fmt-singles">Singles</span></td><td>July 25</td><td>8</td><td>8</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+  <div class="admin-login" id="admin-login">
+    <h2>⚙️ Admin Panel</h2>
+    <p>Enter the admin password to manage scores, matchups, and settings.</p>
+    <div class="form-group" style="margin-bottom:16px;text-align:left">
+      <label>Password</label>
+      <input type="password" id="admin-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()">
+    </div>
+    <button class="btn btn-gold" onclick="adminLogin()">Unlock Admin</button>
+    <div id="login-err" style="color:#e07070;font-size:.75rem;margin-top:10px;display:none">Incorrect password</div>
+  </div>
+
+  <div class="admin-panel" id="admin-panel">
+    <div class="logout-bar">
+      <h2>⚙️ Admin Panel</h2>
+      <button class="btn btn-sm" style="background:#222;color:#aaa" onclick="adminLogout()">Log Out</button>
+    </div>
+
+    <!-- Team Names -->
+    <div class="admin-section">
+      <h3>Team Names</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Red Team Name</label><input id="a-red-name" placeholder="e.g. Team USA"></div>
+        <div class="form-group"><label>Blue Team Name</label><input id="a-blue-name" placeholder="e.g. Team Europe"></div>
+        <div class="form-group"><label>&nbsp;</label><button class="btn btn-gold" onclick="saveTeamNames()">Save</button><span class="save-notice" id="tn-saved">✓ Saved!</span></div>
+      </div>
+    </div>
+
+    <!-- Zoom Link -->
+    <div class="admin-section">
+      <h3>Zoom Link</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Zoom URL</label><input id="a-zoom" placeholder="https://zoom.us/j/..."></div>
+        <div class="form-group"><label>&nbsp;</label><button class="btn btn-gold" onclick="saveZoom()">Save</button><span class="save-notice" id="zl-saved">✓ Saved!</span></div>
+      </div>
+    </div>
+
+    <!-- Round Scores & Status -->
+    <div class="admin-section">
+      <h3>Round Scores &amp; Status</h3>
+      <div id="admin-rounds"></div>
+      <button class="btn btn-gold" style="margin-top:8px" onclick="saveRounds()">Save All Rounds</button>
+      <span class="save-notice" id="rd-saved">✓ Saved!</span>
+    </div>
+
+    <!-- Matchup Results -->
+    <div class="admin-section">
+      <h3>Matchup Results</h3>
+      <p style="color:#666;font-size:.75rem;font-weight:normal;margin-bottom:16px">Enter result as: <em style="color:#aaa">R W</em> (Red wins), <em style="color:#aaa">B W</em> (Blue wins), <em style="color:#aaa">H</em> (halved), or leave blank for upcoming</p>
+      <div id="admin-matchups"></div>
+      <button class="btn btn-gold" style="margin-top:8px" onclick="saveMatchups()">Save All Matchups</button>
+      <span class="save-notice" id="mu-saved">✓ Saved!</span>
+    </div>
+
+    <!-- Player Records -->
+    <div class="admin-section">
+      <h3>Player Records</h3>
+      <p style="color:#666;font-size:.75rem;font-weight:normal;margin-bottom:16px">Format: W-L-H (e.g. 2-1-0)</p>
+      <div id="admin-records"></div>
+      <button class="btn btn-gold" style="margin-top:8px" onclick="saveRecords()">Save Records</button>
+      <span class="save-notice" id="rec-saved">✓ Saved!</span>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const ADMIN_PW = "bertandernie2026";
+
+const ROUNDS_DEF = [
+  {name:"Round 1 — Foursomes", day:"July 24 AM", format:"Alternate Shot", matches:4, pts:4},
+  {name:"Round 2 — Four-Balls", day:"July 24 PM", format:"Best Ball", matches:4, pts:4},
+  {name:"Round 3 — Foursomes", day:"July 25 AM", format:"Alternate Shot", matches:4, pts:4},
+  {name:"Round 4 — Singles",   day:"July 25 PM", format:"Singles",        matches:8, pts:8},
+];
+
+const MATCHUPS_DEF = [
+  // Round 1
+  {r:0, redP:"Player 1 & Player 2", blueP:"Player A & Player B"},
+  {r:0, redP:"Player 3 & Player 4", blueP:"Player C & Player D"},
+  {r:0, redP:"Player 5 & Player 6", blueP:"Player E & Player F"},
+  {r:0, redP:"Player 7 & Player 8", blueP:"Player G & Player H"},
+  // Round 2
+  {r:1, redP:"Player 1 & Player 3", blueP:"Player A & Player C"},
+  {r:1, redP:"Player 2 & Player 4", blueP:"Player B & Player D"},
+  {r:1, redP:"Player 5 & Player 7", blueP:"Player E & Player G"},
+  {r:1, redP:"Player 6 & Player 8", blueP:"Player F & Player H"},
+  // Round 3
+  {r:2, redP:"TBD & TBD", blueP:"TBD & TBD"},
+  {r:2, redP:"TBD & TBD", blueP:"TBD & TBD"},
+  {r:2, redP:"TBD & TBD", blueP:"TBD & TBD"},
+  {r:2, redP:"TBD & TBD", blueP:"TBD & TBD"},
+  // Round 4
+  {r:3, redP:"Player 1", blueP:"Player A"},
+  {r:3, redP:"Player 2", blueP:"Player B"},
+  {r:3, redP:"Player 3", blueP:"Player C"},
+  {r:3, redP:"Player 4", blueP:"Player D"},
+  {r:3, redP:"Player 5", blueP:"Player E"},
+  {r:3, redP:"Player 6", blueP:"Player F"},
+  {r:3, redP:"Player 7", blueP:"Player G"},
+  {r:3, redP:"Player 8", blueP:"Player H"},
+];
+
+const ALL_PLAYERS = [
+  {name:'Adam Seubert',   hdcp:'Hdcp: 11', team:'red',  initials:'AS', badges:[{cls:'badge-captain-red',txt:'🏆 Tournament Director'}], bio:"The self-appointed Commissioner of Chaos. Harry had the audacity to be unavailable, so Adam stepped up, seized power, and built an entire tournament website about it. An 11 handicap who spends more time organizing spreadsheets and Venmo requests than actually practicing — but hey, someone has to keep this circus running. He will absolutely remind you that this was all his idea."},
+  {name:'Aaron Whitener', hdcp:'Hdcp: 24', team:'red',  initials:'AW', badges:[{cls:'badge-captain-red',txt:'⚔️ Red Captain'}], bio:"The Red Captain. The legend. The cautionary tale. Aaron famously ascended to wizard level on mushroom gummies last year and single-handedly convinced stoic John Herrel to loosen up — a feat previously thought impossible. He talks to himself mid-backswing, has a pre-shot routine that looks like he's having an argument with his club, and operates at a frequency that most people can't fully comprehend. A 24 handicap who plays every shot like it's the most important shot in the history of golf."},
+  {name:'John Herrel',    hdcp:'Hdcp: 0',  team:'red',  initials:'JH', badges:[{cls:'badge-special',txt:'⭐ Scratch Golfer'}], bio:"A zero handicap in a tournament full of chaos — John is essentially a professional golfer who accidentally got invited to a party and spent several years standing in the corner judging everyone. To his credit, he finally let his hair down last year (thanks, Aaron). He knows he's the best golfer in the group. You know he's the best golfer. He definitely knows you know."},
+  {name:'Kevin Butcher',  hdcp:'Hdcp: 6',  team:'red',  initials:'KB', badges:[{cls:'badge-special',txt:'🏌️ College Golf'}], bio:"A college golfer with a silky swing and true competitor — right up until someone hands him his fourth drink. Sober Kevin is lights out. Four-beers Kevin is essentially Cory Blair with better form. The question every round is: which Kevin shows up on the back nine?"},
+  {name:'Steve Chonka',   hdcp:'Hdcp: 9',  team:'red',  initials:'SC', badges:[], bio:"Steve arrives at every tournament with his bucket hat firmly planted like a man who has made peace with all of his decisions. A solid 9 handicap — until someone offends his sensibilities, like applying chapstick to a driver. He reportedly called out Chris Clark for that exact crime. He is a sore loser and he knows it and he simply does not care."},
+  {name:'Teal Taylor',    hdcp:'Hdcp: 11', team:'red',  initials:'TT', badges:[{cls:'badge-special',txt:'✈️ Flew In'}], bio:"The only man who bought a plane ticket specifically for this tournament — which is either the most loyal thing anyone has ever done or a sign he needs to re-examine priorities. His name is literally a color. Famous for hitting balls negative yardage by ricocheting off trees back behind the tee box."},
+  {name:'Gino Smith',     hdcp:'Hdcp: 18', team:'red',  initials:'GS', badges:[], bio:"Gino looks like he should be writing you a ticket and asking for your license and registration. The vibe is full law enforcement, the attitude is decidedly off-duty. A first-timer about to discover this tournament has essentially no rules, no law, and certainly no authority figures — which may or may not be a problem for a man who looks like one."},
+  {name:'Matt Moore',     hdcp:'Hdcp: 9',  team:'red',  initials:'MM', badges:[], bio:"Matt has played softball with this group. He has witnessed this tournament from the sidelines. He has seen things. And yet he accepted the invitation anyway. He can no longer laugh from a safe distance — he is now very much inside the zoo."},
+  {name:'Matt Deck',      hdcp:'Hdcp: 15', team:'blue', initials:'MD', badges:[{cls:'badge-special',txt:'🤝 Co-Director'}], bio:"Adam's co-leader and the man on the losing team for 8 out of 9 years — a statistical achievement bordering on supernatural. He will change at least two rules before the first tee shot. Once introduced a scoring adjustment so confusing that three people thought they'd won a match they'd actually lost. Cursed by a golf witch."},
+  {name:'Eric Fitzgerald',hdcp:'Hdcp: 22', team:'blue', initials:'EF', badges:[{cls:'badge-captain-blue',txt:'⚔️ Blue Captain'}], bio:"Blue Team Captain. Eric carries a 22 handicap with the swagger of someone who just shot a 68. He will tell you, unprompted, about several good shots he's hit in his life. To his credit, he can shotgun a beer faster than most people can open one, and when he walks onto the first tee the energy shifts — everyone knows the party has officially started."},
+  {name:'Cory Blair',     hdcp:'Hdcp: 24', team:'blue', initials:'CB', badges:[{cls:'badge-special',txt:'🎸 Air Guitar Champion'}], bio:"A 24 handicap (the maximum, which he earned) who plays golf like it's a creative writing exercise. His scorecards are more fiction than fact; he approaches stroke-counting the way a jazz musician approaches sheet music — as a suggestion. Once he gets a few drinks in, he transforms into a rockstar delivering air guitar of such raw passion you forget he just took a ten on a par three."},
+  {name:'Brian Fogg',     hdcp:'Hdcp: 10', team:'blue', initials:'BF', badges:[{cls:'badge-special',txt:'⚓ U.S. Navy'}], bio:"An active Navy man walking directly into Air Force territory in Colorado Springs. A 10 handicap who can genuinely play — when his body cooperates, which historically it does not. Last year it was gout. Before that, something else. There is always something. Brian arrives at every tournament with a new ailment and a detailed explanation for why it caused each bad shot."},
+  {name:'Chris Clark',    hdcp:'Hdcp: 18', team:'blue', initials:'CC', badges:[{cls:'badge-special',txt:'🧴 Chapstick Accused'}], bio:"Chris has the best beard in the group and it's not close. He allegedly applied chapstick to his driver last year and was absolutely bombing it — which Steve Chonka reported to anyone who would listen as if it were a federal crime. His short game remains a journey, but if you need someone who looks cool leaning on a putter, Chris is your guy."},
+  {name:'Lorin Unruh',    hdcp:'Hdcp: 18', team:'blue', initials:'LU', badges:[{cls:'badge-special',txt:'🏠 Local Host'}], bio:"The man who made Colorado Springs possible — connections, local knowledge, and, in a decision he'll quietly reconsider by day two, his girlfriend as the group's personal chauffeur. Off the tee he hits it roughly the same distance as a senior citizen with persimmon clubs in a gentle crosswind. He brought the hookups and shall be respected. His girlfriend shall be thanked profusely."},
+  {name:'Sam Baldwin',    hdcp:'Hdcp: 5',  team:'blue', initials:'SB', badges:[{cls:'badge-special',txt:'🏔️ Local'}], bio:"A 5 handicap Colorado Springs local who wandered into something he was not fully briefed on. As a first-timer, his one request was to not have to stay with the group after golf — the single most emotionally intelligent decision anyone in this tournament has ever made."},
+  {name:'Jay Drake',      hdcp:'Hdcp: 10', team:'blue', initials:'JD', badges:[{cls:'badge-special',txt:'💰 Discount King'}], bio:"A local Colorado Springs first-timer who has already contributed more than most veterans — he helped lock down discounted tee times, earning a lifetime of goodwill. He better buckle up. The group is very excited to corrupt someone new."},
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+let state = {
+  redName: "Team Red", blueName: "Team Blue", zoomUrl: "",
+  rounds: ROUNDS_DEF.map(r => ({...r, redScore:"—", blueScore:"—", status:"upcoming"})),
+  matchups: MATCHUPS_DEF.map(m => ({...m, result:""})),
+  records: Object.fromEntries(ALL_PLAYERS.map(p => [p.name, "0-0-0"]))
+};
+
+async function loadState() {
+  try {
+    const r = await window.storage.get('tournament-state');
+    if (r) { const s = JSON.parse(r.value); state = {...state, ...s}; }
+  } catch(e) {}
+  renderAll();
+}
+
+async function saveState() {
+  try { await window.storage.set('tournament-state', JSON.stringify(state)); } catch(e) {}
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────
+function renderAll() {
+  // Team names
+  ['hero-red-name','lb-red-name'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=state.redName; });
+  ['hero-blue-name','lb-blue-name'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=state.blueName; });
+  document.getElementById('red-team-title').textContent = '🔴 ' + state.redName;
+  document.getElementById('blue-team-title').textContent = '🔵 ' + state.blueName;
+
+  // Scores
+  let totalRed=0, totalBlue=0;
+  state.rounds.forEach(r => {
+    const rv = parseFloat(r.redScore)||0, bv = parseFloat(r.blueScore)||0;
+    totalRed+=rv; totalBlue+=bv;
+  });
+  document.getElementById('lb-red-score').textContent = totalRed % 1 === 0 ? totalRed : totalRed.toFixed(1);
+  document.getElementById('lb-blue-score').textContent = totalBlue % 1 === 0 ? totalBlue : totalBlue.toFixed(1);
+
+  // Rounds display
+  document.getElementById('rounds-display').innerHTML = state.rounds.map(r => `
+    <div class="round-card">
+      <div class="round-card-header"><span class="round-name">${r.name}</span><span class="round-status status-${r.status}">${r.status}</span></div>
+      <div class="round-score"><span class="r-score red">${r.redScore}</span><span class="r-dash">·</span><span class="r-score blue">${r.blueScore}</span></div>
+      <div class="round-format">${r.matches} matches · ${r.pts} pts available · ${r.format}</div>
+    </div>`).join('');
+
+  // Matchups display
+  const byRound = [[], [], [], []];
+  state.matchups.forEach(m => byRound[m.r].push(m));
+  document.getElementById('matchups-display').innerHTML = byRound.map((ms, ri) => {
+    const rd = state.rounds[ri];
+    return `<div class="round-label">${rd.name} · ${rd.day} (${rd.format})</div>
+    <div class="matchups-grid">${ms.map(m => {
+      let redTxt='—', blueTxt='—', rc='tie', bc='tie';
+      if(m.result==='R W'){redTxt='W';blueTxt='L';rc='red';bc='blue';}
+      else if(m.result==='B W'){redTxt='L';blueTxt='W';rc='blue';bc='red';}
+      else if(m.result==='H'){redTxt='½';blueTxt='½';}
+      return `<div class="matchup-card">
+        <div class="mplayer"><div class="pnum red">R</div><div class="pname">${m.redP}<small>${state.redName}</small></div></div>
+        <div class="match-res"><span class="rs ${rc}">${redTxt}</span><span class="sep">/</span><span class="rs ${bc}">${blueTxt}</span></div>
+        <div class="mplayer right"><div class="pname" style="text-align:right">${m.blueP}<small>${state.blueName}</small></div><div class="pnum blue">B</div></div>
+      </div>`;}).join('')}</div>`;
+  }).join('');
+
+  // Players
+  renderPlayerSection('red'); renderPlayerSection('blue');
+
+  // Zoom
+  const zb = document.getElementById('zoom-link');
+  if(zb) { zb.href = state.zoomUrl || '#'; }
+}
+
+function renderPlayerSection(team) {
+  const players = ALL_PLAYERS.filter(p => p.team === team);
+  document.getElementById(team+'-players').innerHTML = players.map(p => {
+    const badges = (p.badges||[]).map(b=>`<span class="pc-badge ${b.cls}">${b.txt}</span>`).join('');
+    const rec = state.records[p.name] || '0-0-0';
+    return `<div class="player-card">
+      <div class="pc-top">
+        <div class="pc-avatar ${team}">${p.initials}</div>
+        <div class="pc-header">
+          <div class="pc-name">${p.name}</div>
+          <div class="pc-meta"><span class="pc-hdcp">${p.hdcp}</span><span class="pc-record">${rec} W-L-H</span>${badges}</div>
+        </div>
+      </div>
+      <div class="pc-bio">${p.bio}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── ADMIN ────────────────────────────────────────────────────────────────
+function adminLogin() {
+  if(document.getElementById('admin-pw').value === ADMIN_PW) {
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-panel').classList.add('visible');
+    document.getElementById('login-err').style.display='none';
+    buildAdminForms();
+  } else {
+    document.getElementById('login-err').style.display='block';
+  }
+}
+function adminLogout() {
+  document.getElementById('admin-login').style.display='block';
+  document.getElementById('admin-panel').classList.remove('visible');
+  document.getElementById('admin-pw').value='';
+}
+
+function buildAdminForms() {
+  // Team names
+  document.getElementById('a-red-name').value = state.redName;
+  document.getElementById('a-blue-name').value = state.blueName;
+  document.getElementById('a-zoom').value = state.zoomUrl || '';
+
+  // Rounds
+  document.getElementById('admin-rounds').innerHTML = state.rounds.map((r,i) => `
+    <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #1a1a1a">
+      <div style="color:#aaa;font-size:.75rem;margin-bottom:8px;letter-spacing:1px">${r.name} · ${r.day}</div>
+      <div class="form-row">
+        <div class="form-group"><label>Red Score</label><input id="r-red-${i}" value="${r.redScore==='—'?'':r.redScore}" placeholder="e.g. 2.5"></div>
+        <div class="form-group"><label>Blue Score</label><input id="r-blue-${i}" value="${r.blueScore==='—'?'':r.blueScore}" placeholder="e.g. 1.5"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="r-status-${i}">
+            <option value="upcoming" ${r.status==='upcoming'?'selected':''}>Upcoming</option>
+            <option value="live" ${r.status==='live'?'selected':''}>Live</option>
+            <option value="complete" ${r.status==='complete'?'selected':''}>Complete</option>
+          </select>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Matchups
+  document.getElementById('admin-matchups').innerHTML = state.matchups.map((m,i) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 130px;gap:8px;align-items:center;margin-bottom:8px;font-size:.78rem">
+      <span style="color:#ccc">${m.redP}</span>
+      <span style="color:#ccc">${m.blueP}</span>
+      <select id="mu-${i}">
+        <option value="" ${m.result===''?'selected':''}>Upcoming</option>
+        <option value="R W" ${m.result==='R W'?'selected':''}>Red Wins</option>
+        <option value="B W" ${m.result==='B W'?'selected':''}>Blue Wins</option>
+        <option value="H" ${m.result==='H'?'selected':''}>Halved</option>
+      </select>
+    </div>`).join('');
+
+  // Records
+  document.getElementById('admin-records').innerHTML = ALL_PLAYERS.map(p => `
+    <div style="display:grid;grid-template-columns:180px 120px;gap:8px;align-items:center;margin-bottom:8px">
+      <span style="color:#ccc;font-size:.8rem">${p.name}</span>
+      <input id="rec-${p.name.replace(/\s/g,'_')}" value="${state.records[p.name]||'0-0-0'}" placeholder="W-L-H">
+    </div>`).join('');
+}
+
+function showNotice(id) {
+  const el = document.getElementById(id);
+  el.style.display='inline'; setTimeout(()=>el.style.display='none', 2500);
+}
+
+function saveTeamNames() {
+  state.redName = document.getElementById('a-red-name').value || 'Team Red';
+  state.blueName = document.getElementById('a-blue-name').value || 'Team Blue';
+  saveState(); renderAll(); showNotice('tn-saved');
+}
+function saveZoom() {
+  state.zoomUrl = document.getElementById('a-zoom').value;
+  saveState(); renderAll(); showNotice('zl-saved');
+}
+function saveRounds() {
+  state.rounds.forEach((r,i) => {
+    const rv = document.getElementById(`r-red-${i}`).value;
+    const bv = document.getElementById(`r-blue-${i}`).value;
+    r.redScore = rv==='' ? '—' : rv;
+    r.blueScore = bv==='' ? '—' : bv;
+    r.status = document.getElementById(`r-status-${i}`).value;
+  });
+  saveState(); renderAll(); showNotice('rd-saved');
+}
+function saveMatchups() {
+  state.matchups.forEach((m,i) => { m.result = document.getElementById(`mu-${i}`).value; });
+  saveState(); renderAll(); showNotice('mu-saved');
+}
+function saveRecords() {
+  ALL_PLAYERS.forEach(p => {
+    const el = document.getElementById('rec-'+p.name.replace(/\s/g,'_'));
+    if(el) state.records[p.name] = el.value;
+  });
+  saveState(); renderAll(); showNotice('rec-saved');
+}
+
+function zoomClick() {
+  if(!state.zoomUrl) { alert('Zoom link coming soon! Check back closer to May 5th.'); return false; }
+  window.open(state.zoomUrl, '_blank'); return false;
+}
+
+function show(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+loadState();
+</script>
+</body>
+</html>
