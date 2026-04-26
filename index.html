@@ -46,8 +46,6 @@
   .draft-date { font-size:.8rem; color:#aaa; letter-spacing:1px; margin-bottom:12px; }
   .draft-desc { font-size:.82rem; color:#999; line-height:1.6; font-weight:normal; margin-bottom:16px; }
   .draft-desc strong { color:#ccc; }
-  .zoom-btn { display:inline-block; background:#2d6a4f; color:#fff; padding:10px 22px; border-radius:4px; font-size:.8rem; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border:1px solid #3a8a66; transition:background .2s; cursor:pointer; }
-  .zoom-btn:hover { background:#3a8a66; }
   .draft-captains { display:flex; align-items:center; gap:16px; flex-shrink:0; }
   .cap-avatar { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:900; margin:0 auto 8px; }
   .cap-avatar.red { background:var(--red); border:2px solid #e07070; }
@@ -317,12 +315,6 @@
     </div>
 
     <div class="admin-section">
-      <h3>Zoom Link</h3>
-      <div class="form-row">
-        <div class="form-group"><label>Zoom URL</label><input id="a-zoom" placeholder="https://zoom.us/j/..."></div>
-        <div class="form-group"><label>&nbsp;</label><button class="btn btn-gold" onclick="saveZoom()">Save</button><span class="save-notice" id="zl-saved">✓ Saved!</span></div>
-      </div>
-    </div>
 
     <div class="admin-section">
       <h3>Round Scores &amp; Status</h3>
@@ -397,7 +389,7 @@ const PLAYERS_DEF = [
 
 // ── STATE ──────────────────────────────────────────────────────────────
 let state = {
-  redName:"Team Red", blueName:"Team Blue", zoomUrl:"",
+  redName:"Team Red", blueName:"Team Blue",
   rounds: ROUNDS_DEF.map(r=>({...r,redScore:"—",blueScore:"—",status:"upcoming"})),
   matchups: MATCHUPS_DEF.map(m=>({...m,result:""})),
   players: PLAYERS_DEF.map(p=>({...p})),
@@ -453,8 +445,6 @@ function renderAll() {
 
   renderPlayerSection('red');
   renderPlayerSection('blue');
-  const zb=document.getElementById('zoom-link');
-  if(zb) zb.href=state.zoomUrl||'#';
 }
 
 function avatarHTML(p) {
@@ -498,7 +488,6 @@ function adminLogout() {
 function buildAdminForms() {
   document.getElementById('a-red-name').value=state.redName;
   document.getElementById('a-blue-name').value=state.blueName;
-  document.getElementById('a-zoom').value=state.zoomUrl||'';
 
   document.getElementById('admin-rounds').innerHTML=state.rounds.map((r,i)=>`
     <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #1a1a1a">
@@ -616,10 +605,8 @@ function showNotice(id) {
   setTimeout(()=>el.style.display='none',2500);
 }
 function saveTeamNames() { state.redName=document.getElementById('a-red-name').value||'Team Red'; state.blueName=document.getElementById('a-blue-name').value||'Team Blue'; saveState();renderAll();showNotice('tn-saved'); }
-function saveZoom() { state.zoomUrl=document.getElementById('a-zoom').value; saveState();renderAll();showNotice('zl-saved'); }
 function saveRounds() { state.rounds.forEach((r,i)=>{ const rv=document.getElementById(`r-red-${i}`).value,bv=document.getElementById(`r-blue-${i}`).value; r.redScore=rv===''?'—':rv; r.blueScore=bv===''?'—':bv; r.status=document.getElementById(`r-status-${i}`).value; }); saveState();renderAll();showNotice('rd-saved'); }
 function saveMatchups() { state.matchups.forEach((m,i)=>{ m.result=document.getElementById(`mu-${i}`).value; }); saveState();renderAll();showNotice('mu-saved'); }
-function zoomClick() { if(!state.zoomUrl){alert('Zoom link coming soon!');return false;} window.open(state.zoomUrl,'_blank');return false; }
 
 function show(id) {
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
