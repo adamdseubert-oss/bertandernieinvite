@@ -173,6 +173,44 @@
   .upload-input{display:none;}
   .chevron{color:#666;font-size:.8rem;transition:transform .2s;}
   .chevron.open{transform:rotate(180deg);}
+ /* HOME PAGE UPGRADES */
+.home-score{
+  display:flex;justify-content:center;gap:40px;
+  margin:30px 0;font-size:2rem;font-weight:bold;
+}
+.home-score span{color:var(--gold);}
+
+.home-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+  margin:36px auto 0;
+  max-width:900px;
+}
+
+.home-card-link{text-decoration:none;color:inherit;}
+
+.home-card-link:hover .info-card{
+  transform:translateY(-4px);
+  border-color:var(--gold);
+}
+
+.course-logo{
+  width:40px;height:40px;
+  background:#fff;border-radius:6px;
+  padding:4px;margin-bottom:10px;
+}
+
+.draft-board{
+  max-width:900px;
+  margin:40px auto;
+  background:#111;
+  border:1px solid #333;
+  padding:20px;
+}
+.draft-teams{display:flex;gap:20px;}
+.draft-col{flex:1;background:#1a1a1a;padding:10px;border-radius:6px;}
+.draft-player{padding:6px;border-bottom:1px solid #333;font-size:.85rem;}
 </style>
 </head>
 <body>
@@ -218,6 +256,55 @@
           <div><div class="cap-avatar blue">EF</div><div class="cap-name">Eric Fitzgerald</div><div class="cap-team">🔵 Blue Captain</div></div>
         </div>
       </div>
+     <!-- LIVE SCORE -->
+<div class="home-score">
+  <div id="home-red">0</div>
+  <span>-</span>
+  <div id="home-blue">0</div>
+</div>
+
+<!-- HOME CARDS -->
+<div class="home-cards">
+
+  <a class="home-card-link" href="https://www.airbnb.com/rooms/1331202886238832883?unique_share_id=44db245d-ed33-44b7-b3e5-53afb3979574" target="_blank">
+    <div class="info-card">
+      <h3>🏠 Airbnb</h3>
+      <p>Headquarters for the weekend. Chaos expected.</p>
+    </div>
+  </a>
+
+  <a class="home-card-link" href="https://kingsdeergolfclub.com" target="_blank">
+    <div class="info-card">
+      <img class="course-logo" src="https://www.google.com/s2/favicons?domain=kingsdeergolfclub.com&sz=128">
+      <h3>Friday — King’s Deer</h3>
+      <p>7:30 AM / 1:40 PM<br>Format TBD</p>
+    </div>
+  </a>
+
+  <a class="home-card-link" href="https://plumcreekgolf.com" target="_blank">
+    <div class="info-card">
+      <img class="course-logo" src="https://www.google.com/s2/favicons?domain=plumcreekgolf.com&sz=128">
+      <h3>Saturday — Plum Creek</h3>
+      <p>8:03 AM / 2:03 PM<br>Format TBD</p>
+    </div>
+  </a>
+
+</div>
+
+<!-- DRAFT BOARD -->
+<div class="draft-board">
+  <h3>Team Draft Board</h3>
+  <div class="draft-teams">
+    <div class="draft-col">
+      <h4>🔴 Team Red</h4>
+      <div id="draft-red"></div>
+    </div>
+    <div class="draft-col">
+      <h4>🔵 Team Blue</h4>
+      <div id="draft-blue"></div>
+    </div>
+  </div>
+</div>
     </div>
   </div>
 </section>
@@ -445,6 +532,8 @@ function renderAll() {
 
   renderPlayerSection('red');
   renderPlayerSection('blue');
+ updateHomeScore();
+renderDraftBoard();
 }
 
 function avatarHTML(p) {
@@ -617,6 +706,28 @@ function show(id) {
 }
 
 loadState();
+ function updateHomeScore() {
+  let red = 0, blue = 0;
+
+  state.rounds.forEach(r => {
+    red += parseFloat(r.redScore) || 0;
+    blue += parseFloat(r.blueScore) || 0;
+  });
+
+  document.getElementById("home-red").innerText = red;
+  document.getElementById("home-blue").innerText = blue;
+}
+
+function renderDraftBoard() {
+  const redPlayers = state.players.filter(p => p.team === "red");
+  const bluePlayers = state.players.filter(p => p.team === "blue");
+
+  document.getElementById("draft-red").innerHTML =
+    redPlayers.map(p => `<div class="draft-player">${p.name}</div>`).join("");
+
+  document.getElementById("draft-blue").innerHTML =
+    bluePlayers.map(p => `<div class="draft-player">${p.name}</div>`).join("");
+}
 </script>
 </body>
 </html>
