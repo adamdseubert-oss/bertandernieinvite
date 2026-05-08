@@ -399,6 +399,7 @@
     </div>
   </div>
 </div>
+    </div>section>
 
 <!-- SCORES -->
 <section id="leaderboard">
@@ -707,8 +708,6 @@ function renderPlayerSection(team) {
   }).join('');
 }
 
- loadstate();
-
 // ── ADMIN ──────────────────────────────────────────────────────────────
 function adminLogin() {
   if(document.getElementById('admin-pw').value===ADMIN_PW) {
@@ -878,6 +877,9 @@ function renderDraftBoard() {
   document.getElementById("draft-blue").innerHTML =
     bluePlayers.map(p => `<div class="draft-player">${p.name}</div>`).join("");
 }
+
+ loadState();
+ 
 </script>
 </body>
 </html>
