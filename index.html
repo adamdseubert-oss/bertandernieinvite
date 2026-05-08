@@ -209,6 +209,86 @@
   border:1px solid #333;
   padding:20px;
 }
+
+ .draft-board-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:18px;
+}
+
+.draft-board-header h3{
+  color:var(--gold);
+  font-size:.9rem;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.draft-board-header p{
+  color:#888;
+  font-size:.75rem;
+  font-weight:normal;
+}
+
+.draft-teams-3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:16px;
+}
+
+.draft-col{
+  min-height:220px;
+  border:1px solid #2a2a2a;
+}
+
+.draft-col h4{
+  margin-bottom:10px;
+  font-size:.75rem;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+.draft-player{
+  background:#111;
+  border:1px solid #333;
+  border-radius:6px;
+  padding:10px 12px;
+  margin-bottom:8px;
+  cursor:grab;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.draft-player:active{
+  cursor:grabbing;
+}
+
+.draft-player small{
+  color:#888;
+  font-size:.65rem;
+}
+
+.draft-red{
+  border-top:3px solid var(--red);
+}
+
+.draft-blue{
+  border-top:3px solid var(--blue);
+}
+
+.draft-pool{
+  border-top:3px solid var(--gold);
+}
+
+@media(max-width:900px){
+  .draft-teams-3{
+    grid-template-columns:1fr;
+  }
+}
+ 
 .draft-teams{display:flex;gap:20px;}
 .draft-col{flex:1;background:#1a1a1a;padding:10px;border-radius:6px;}
 .draft-player{padding:6px;border-bottom:1px solid #333;font-size:.85rem;}
@@ -294,21 +374,31 @@
 
 <!-- DRAFT BOARD -->
 <div class="draft-board">
-  <h3>Team Draft Board</h3>
-  <div class="draft-teams">
-    <div class="draft-col">
+  <div class="draft-board-header">
+    <div>
+      <h3>Team Draft Board</h3>
+      <p>Drag players into Team Red or Team Blue. Picks save automatically.</p>
+    </div>
+    <button class="btn btn-sm" onclick="resetDraftBoard()">Reset Draft</button>
+  </div>
+
+  <div class="draft-teams draft-teams-3">
+    <div class="draft-col draft-pool" ondragover="allowDrop(event)" ondrop="dropPlayer(event, 'pool')">
+      <h4>⚪ Available Players</h4>
+      <div id="draft-pool"></div>
+    </div>
+
+    <div class="draft-col draft-red" ondragover="allowDrop(event)" ondrop="dropPlayer(event, 'red')">
       <h4>🔴 Team Red</h4>
       <div id="draft-red"></div>
     </div>
-    <div class="draft-col">
+
+    <div class="draft-col draft-blue" ondragover="allowDrop(event)" ondrop="dropPlayer(event, 'blue')">
       <h4>🔵 Team Blue</h4>
       <div id="draft-blue"></div>
     </div>
   </div>
 </div>
-    </div>
-  </div>
-</section>
 
 <!-- SCORES -->
 <section id="leaderboard">
@@ -457,22 +547,22 @@ const MATCHUPS_DEF = [
 ];
 
 const PLAYERS_DEF = [
-  {name:'Adam Seubert',      hdcp:'11',   team:'red',     initials:'AS',   badges:[{cls:'badge-captain-red',txt:'⭐⭐⭐ Paid In Full'}],  bio:"Adam Seubert is the acting commissioner (never again will he sign up for this). What started as a golf trip has slowly evolved into a fully operational sporting event largely because Adam refused to let this year die. Every tee time, Airbnb, side game, spreadsheet, payment reminder, logo revision, and increasingly aggressive group email somehow traces back to him. Despite carrying the operational burden of organizing 16 grown men for 72 holes of golf, Adam still enters every year fully expecting to compete. On the course, Adam’s game is fueled primarily by competitiveness and selective optimism. A good front nine immediately convinces him he’s entering the greatest golf stretch of his life. He thrives in the chaos of team formats and side games, particularly once the pressure and chirping start escalating. Off the course, he’s the guy making sure everyone gets to the course on time while simultaneously participating in the same bad decisions he’s trying to manage. Adam understands what Bert & Ernie is actually supposed to be: competitive golf, escalating nonsense, irrational confidence, and a weekend with the boys that somehow gets bigger and more unhinged every single year.", photo:"adam.jpg"},
-  {name:'Aaron Whitener',    hdcp:'24',   team:'red',     initials:'AW',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Aaron Whitener is the Red Team Captain, spiritual wildcard of the tournament, and the only known participant to achieve what the group now officially refers to as “Wizard Status.” Last year, after consuming a quantity of mushroom gummies that most medical professionals would strongly discourage, Aaron ascended to a state of consciousness previously thought unreachable during a golf trip. The achievement remains unmatched in tournament history. Plenty of players have gotten drunk. A few have gotten weird. On the course, Aaron plays golf with the emotional stability of a man trying to defuse a bomb while also arguing with his own clubs. His pre-shot routine feels less like preparation and more like active conflict resolution. Every swing appears to involve at least one last-second thought change, and yet every once in a while he absolutely stripes one, immediately validating all prior decisions in his mind. Aaron fully embodies the spirit of Bert & Ernie: competitive, irrationally confident, unpredictable, and always operating just slightly outside the boundaries of normal human behavior.", photo:"aaron.jpg"},
-  {name:'Johnny Blomquist',  hdcp:'15',   team:'red',     initials:'JB',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"A former hockey player turned golfer in the mold of Happy Gilmore, he brings a full-send mentality to every round. He can genuinely skate better than he can walk, which explains a lot about his golf swing. A lifelong Chicago Bears fan, he’s mentally conditioned for adversity but shows zero signs of reduced confidence, proudly operating under his self-given nickname “Johnny Beast” (inspired by Outer Banks). He's likely a better hockey player than Zach, and somehow threatens longest drive with a 5-wood, occasionally rivaling Fitz. As the youngest player (by a significant margin) in the field, he brings energy, chaos, and strong Lightning McQueen energy to the tournament.", photo:"johnny.jpg"},
-  {name:'Kevin Butcher',     hdcp:'6',    team:'red',     initials:'KB',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Kevin Butcher is one of the few players in the field with actual golf talent, which makes his annual descent into chaos even more impressive. A former college golfer with a legitimately smooth swing, Kevin can look like the best player on the course for stretches — right up until the drinks start stacking up and the situation becomes unstable. There are effectively two versions of Kevin: focused, composed golf Kevin… and post-beverage Kevin, who begins making decisions entirely on confidence and vibes. Last year’s tournament produced what is now considered one of the defining Kevin moments in Bert & Ernie history. After getting aggressively cut off by a bartender mid-round, emotions were high, negotiations became delicate, at one point, the situation escalated to such a level that a mid-round wardrobe change somehow became necessary. And yet, against all odds, not only did he stay on the course, but later in the day he was taking shots with the very bartender who had cut him off in the first place. A complete emotional arc. That sequence perfectly captures the Kevin Butcher experience. When Kevin is locked in, he’s dangerous. When Kevin is unraveling, he’s arguably even more entertaining.", photo:"butch.jpg"},
-  {name:'Steve Chonka',      hdcp:'7',    team:'red',     initials:'SC',   badges:[{cls:'badge-captain-red',txt:'⭐⭐⭐ Paid In Full'}],  bio:"Steve arrives at every tournament with his bucket hat firmly planted like a man who has fully detached from outside judgment and intends to stay that way for 36 holes. The hat has become less of an accessory and more of a psychological tactic — opponents see it and immediately assume they’re about to lose money. Officially, Steve claims to be around a 12 handicap. Unofficially, tournament investigators have begun looking into whether that number was assembled using manipulated data, selective score reporting, and outright deception. Every group has one guy who casually stripes it all day while acting surprised the ball keeps ending up in the fairway. That guy is Steve. What makes him dangerous is the combination of actual ability and emotional instability. Last year he reportedly called out Chris Clark for applying chapstick to a driver — a sentence that sounds fake until you meet Steve. Despite all of this, Steve remains one of the steadiest competitors in the tournament. While others unravel physically, mentally, or chemically by the afternoon rounds, Steve continues methodically working around the course in the bucket hat, quietly taking people’s money and pretending he has no idea how it keeps happening.", photo:"chonka.jpg"},
-  {name:'Teal Taylor',       hdcp:'11',   team:'red',     initials:'TT',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Teal is the only guy named after a color in the field who voluntarily purchased a plane ticket specifically to participate in this tournament — a decision that demonstrates either remarkable loyalty or a complete collapse in personal judgment. Either way, commitment levels cannot be questioned. He’s flying across state lines to play 36 holes a day with a group of degenerates operating under rules largely controlled by Matt Deck. On the course, most notably, he has one of the few documented negative-yardage drives in tournament history. Most importantly, Teal understands the assignment. He didn’t come for pristine golf or personal growth. He came to survive the weekend, participate in the chaos, and spend time golfing with the boys — and in that regard, he may already be winning.", photo:"teal.jpg"},
-  {name:'Ryan Strain',       hdcp:'15',   team:'red',     initials:'RS',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"A respectable golfer and, somehow, the Head Baseball Coach at MSU Denver, he arrives with the leadership qualities you’d expect — and the decision-making you absolutely wouldn’t. Never one to turn down a beer, he operates at a steady pace both on the course and at the cooler, often simultaneously. Known for maintaining strong relationships — including a now-legendary connection with his parents’ neighbor’s daughter — his focus is split at best. Don’t expect full attention during a round; he’s usually on his phone mid-fairway, actively recruiting players like the season depends on it. A former minivan operator turned “golf trip veteran,” he brings experience, unpredictability, and just enough talent to be dangerous. Tournament officials have accepted that his priorities will never fully align with golf — and frankly, that’s what makes him a problem.", photo:"strain.jpg"},
-  {name:'Matt Moore',        hdcp:'9',    team:'red',     initials:'MM',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Matt Moore enters the Bert & Ernie Invitational fully aware of what this group is capable of. He’s spent years observing the chaos from the safety of the softball dugout, watching friendships deteriorate over gimmie putts and hearing stories that should’ve stayed off the record. Most reasonable people would’ve declined the invite. Matt accepted immediately. Known as the sweatiest man on the golf course regardless of temperature, Matt approaches every round like he’s playing 36 holes inside a sauna. He almost certainly carries a backup shirt in his golf bag — a decision that could become vital if Butch gets cut off and requires emergency wardrobe support midway through the day. He may not fully understand what he signed up for, but at this point it’s too late to turn back.", photo:"moore.jpg"},
-  {name:'Matt Deck',         hdcp:'15',   team:'blue',    initials:'MD',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Matt Deck has spent nearly a decade embedded in the Bert & Ernie ecosystem, and somehow his defining legacy remains being on the losing side of approximately 8 out of the last 9 years — an achievement statistically improbable. At this point, people are less surprised when Matt loses and more surprised when his team briefly builds momentum before the inevitable collapse arrives. Despite the historical results, Matt carries himself with the confidence of a reigning champion. Every year by Saturday afternoon he can usually be found attempting to start the Ah Ramba or changing the rules to be in his favor. On the course, Deck’s game runs almost entirely on confidence and emotion. A single flushed iron shot can completely reset his mental state and convince him he’s officially back. He’s the type of golfer capable of talking himself into a comeback at any moment — which honestly makes him dangerous in match play. What Matt lacks in historical results, he more than compensates for with commitment to the event itself. Few people care more about the trip, the competition, and the overall chaos of the weekend. He embraces the gambling, the chirping, the side games, and the full emotional rollercoaster of 36 holes a day with complete sincerity.", photo:"deck.jpg"},
-  {name:'Eric Fitzgerald',   hdcp:'22',   team:'blue',    initials:'EF',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Eric Fitzgerald enters the Bert & Ernie Invitational with the confidence of a scratch golfer and the handicap of a man who once took an eleven and called it “strategic.” As Blue Team Captain, Fitz brings energy, volume, and an unwavering belief that momentum is always one good shot away — even immediately after snap-hooking a drive into another zip code. Physically, Fitz faces one major equipment issue, there is not a hat currently manufactured on earth that comfortably fits his head. Multiple brands have tried and failed. At this point, the only potential solution may be Steve’s bucket hat, which possesses enough surface area and structural integrity to potentially qualify as temporary shelter. Socially, he has unsuccessfully slid into every waitress who has ever worked at Romes DMs, with a level of persistence that should probably be studied professionally. To date, results have remained overwhelmingly negative, though that has done absolutely nothing to discourage future attempts. Additionally, abuelas in Monument are being advised to remain alert and avoid unnecessary eye contact throughout tournament weekend. On the golf course, Fitz is chaos in human form. He can shotgun a beer faster than most people can open one. Every tournament needs someone willing to fully embrace the nonsense, and Fitz has dedicated himself to that role completely. Most importantly, he’s the emotional engine of the Blue Team.", photo:"fitz.jpg"},
-  {name:'Cory Blair',        hdcp:'24',   team:'blue',    initials:'CB',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Cory arrives at the Bert & Ernie Invitational with the confidence of a man who has already convinced himself he’s about to have the best golf weekend of his life — regardless of what the scorecard eventually says. On the course, Cory thrives in chaos. Structured golf is not really his environment. He becomes significantly more dangerous once the gambling starts escalating, the formats get confusing, and everyone begins operating on limited hydration and questionable decision-making. The worse the environment gets, the more comfortable he seems to become. He’s also the type of player capable of producing both the shot of the tournament and the worst hole anyone has ever witnessed within a 20-minute stretch. A flushed approach to three feet is immediately followed by a tee shot that forces the group to discuss local property boundaries. Yet somehow, Cory never appears rattled. He simply reloads, laughs, and starts negotiating presses like nothing happened. He came for 36 holes a day, escalating side bets, unreasonable confidence, and surviving a weekend with the boys. In many ways, that makes him perfectly built for this event.", photo:"cory.jpg"},
-  {name:'Brian Fogg',        hdcp:'10',   team:'blue',    initials:'BF',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Brian Fogg enters the Bert & Ernie Invitational carrying the energy of a man who absolutely believes he’s going to “keep things under control” this weekend despite overwhelming evidence suggesting otherwise. Brian is the type of player who remembers every stroke, every press, every side bet, and every vaguely verbal gambling agreement made three holes earlier. If there’s a scoring dispute, there’s a strong chance Brian already has witness testimony prepared. Physically, he carries himself like a golfer who has seen some things. By the second 36-hole day, his swing may begin to resemble a man trying to unload furniture from a moving truck, but mentally he remains locked in. He is not flashy, not particularly emotional, and rarely the loudest guy in the group — which somehow makes him even more dangerous once matches tighten up. Brian also possesses one of the tournament’s most valuable traits: consistency. Make no mistake — Brian Fogg is exactly the kind of player capable of ruining someone’s Ryder Cup weekend one steady fairway at a time.", photo:"fogg.jpg"},
-  {name:'Tyler Dorworth',    hdcp:'15',   team:'blue',    initials:'TD',   badges:[{cls:'badge-captain-red',txt:'⭐⭐⭐ Paid In Full'}],  bio:"Tyler brings a level of volatility to the Bert & Ernie Invitational that tournament leadership has simply accepted as unavoidable. Every group has one player who operates one bad bounce away from escalating a casual disagreement into a full-contact sporting event — Tyler is that player. Whether it’s a fist fight, a headbutt, or an argument over a conceded putt that spirals wildly out of proportion, he approaches competition with the emotional control of a man trying to defend his honor in a medieval village. Off the course, Tyler’s résumé raises even more questions. He owns a moped entirely unironically, once drove a neon green Wrangler filled with rubber ducks. On the course, scorekeeping exists more as a collaborative storytelling exercise than a strict mathematical process. Most importantly, Tyler and Zach operate as a dangerously co-dependent competitive unit. Tyler is usually the first to suggest doing something reckless, and Zach is usually close behind agreeing to it. Separately, they are manageable. Together, they become an operational concern for the entire event.", photo:"tyler.jpg"},
-  {name:'Lorin Unruh',       hdcp:'18',   team:'blue',    initials:'LU',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Lorin is the man largely responsible for bringing the Bert & Ernie Invitational to Colorado Springs — or at least he was until several of his “guaranteed connections” quietly collapsed under pressure. What originally began as a masterclass in local networking eventually turned into a full-scale recovery operation. A longtime local with deep knowledge of the area, Lorin contributes valuable intel, logistical support, and, most importantly, access to transportation — assuming his girlfriend is still willing to participate by July. On the golf course, Lorin’s game is best described as “strategic.” Off the tee he hits it roughly the same distance as a senior citizen using persimmon woods into a mild headwind, but what he lacks in power he attempts to replace with vibes, local confidence, and an occasional suspiciously optimistic read on the greens. Despite the roster setbacks, Lorin remains fully committed to the event and to golfing with the boys. Tournament leadership would like to formally thank him for his efforts — and preemptively thank his girlfriend for surviving the weekend.", photo:"lorin2.jpg"},
-  {name:'Adam Lewton',       hdcp:'6',    team:'blue',    initials:'A2',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"The other Adam arrives carrying a suspiciously legitimate 5.6 handicap and the quiet confidence of someone who absolutely believes he’s the best golfer in the group — and honestly, he may have a case. Outside of golf, he maintains a low profile… unless you’re active on Untappd, where his craft beer résumé borders on celebrity status. Most notably, he secured the coveted Pride Month badge in both 2020 and 2021, proving a level of commitment to the game that deserves respect. He keeps no LinkedIn profile photo, presumably to avoid recognition from fans of his beer reviews, but professionally works as a Portfolio Manager, making him the tournament’s leading authority on recovering gambling losses and explaining why doubling down was actually the right play statistically. This guy keeps a low profile and a low handicap.", photo:"adam2.jpg"},
-  {name:'Zach Light',        hdcp:'15',   team:'blue',    initials:'ZL',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Zach's pre-round routine consists of one beer and immediately removing his shirt like he’s preparing for a sanctioned backyard fight instead of a tee time. By hole three, tarps are almost certainly off, confidence is sky high, and basic social restraint has left the premises entirely. His golf swing is somehow both athletic and deeply concerning: part hockey slapshot, part squat exercise, part attempt to fully extend every muscle in his body simultaneously. He also carries himself as the unofficial enforcer of the tournament — although important context must be added: Zach will absolutely fight… but preferably only if Tyler is already fighting too. Alone, he’s measured. In tandem, they become a public relations concern. To his credit, Zach is generally considered the better golfer between himself and Tyler, which becomes increasingly important once Tyler begins interpreting stroke counts creatively. Tournament organizers have accepted that containing Zach is unrealistic. The current strategy is simply to keep him hydrated and pointed in the correct direction.", photo:"zach.jpg"},
+  {name:'Adam Seubert',      hdcp:'11',   team:'pool',     initials:'AS',   badges:[{cls:'badge-captain-red',txt:'⭐⭐⭐ Paid In Full'}],  bio:"Adam Seubert is the acting commissioner (never again will he sign up for this). What started as a golf trip has slowly evolved into a fully operational sporting event largely because Adam refused to let this year die. Every tee time, Airbnb, side game, spreadsheet, payment reminder, logo revision, and increasingly aggressive group email somehow traces back to him. Despite carrying the operational burden of organizing 16 grown men for 72 holes of golf, Adam still enters every year fully expecting to compete. On the course, Adam’s game is fueled primarily by competitiveness and selective optimism. A good front nine immediately convinces him he’s entering the greatest golf stretch of his life. He thrives in the chaos of team formats and side games, particularly once the pressure and chirping start escalating. Off the course, he’s the guy making sure everyone gets to the course on time while simultaneously participating in the same bad decisions he’s trying to manage. Adam understands what Bert & Ernie is actually supposed to be: competitive golf, escalating nonsense, irrational confidence, and a weekend with the boys that somehow gets bigger and more unhinged every single year.", photo:"adam.jpg"},
+  {name:'Aaron Whitener',    hdcp:'24',   team:'pool',     initials:'AW',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Aaron Whitener is the Red Team Captain, spiritual wildcard of the tournament, and the only known participant to achieve what the group now officially refers to as “Wizard Status.” Last year, after consuming a quantity of mushroom gummies that most medical professionals would strongly discourage, Aaron ascended to a state of consciousness previously thought unreachable during a golf trip. The achievement remains unmatched in tournament history. Plenty of players have gotten drunk. A few have gotten weird. On the course, Aaron plays golf with the emotional stability of a man trying to defuse a bomb while also arguing with his own clubs. His pre-shot routine feels less like preparation and more like active conflict resolution. Every swing appears to involve at least one last-second thought change, and yet every once in a while he absolutely stripes one, immediately validating all prior decisions in his mind. Aaron fully embodies the spirit of Bert & Ernie: competitive, irrationally confident, unpredictable, and always operating just slightly outside the boundaries of normal human behavior.", photo:"aaron.jpg"},
+  {name:'Johnny Blomquist',  hdcp:'15',   team:'pool',     initials:'JB',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"A former hockey player turned golfer in the mold of Happy Gilmore, he brings a full-send mentality to every round. He can genuinely skate better than he can walk, which explains a lot about his golf swing. A lifelong Chicago Bears fan, he’s mentally conditioned for adversity but shows zero signs of reduced confidence, proudly operating under his self-given nickname “Johnny Beast” (inspired by Outer Banks). He's likely a better hockey player than Zach, and somehow threatens longest drive with a 5-wood, occasionally rivaling Fitz. As the youngest player (by a significant margin) in the field, he brings energy, chaos, and strong Lightning McQueen energy to the tournament.", photo:"johnny.jpg"},
+  {name:'Kevin Butcher',     hdcp:'6',    team:'pool',     initials:'KB',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Kevin Butcher is one of the few players in the field with actual golf talent, which makes his annual descent into chaos even more impressive. A former college golfer with a legitimately smooth swing, Kevin can look like the best player on the course for stretches — right up until the drinks start stacking up and the situation becomes unstable. There are effectively two versions of Kevin: focused, composed golf Kevin… and post-beverage Kevin, who begins making decisions entirely on confidence and vibes. Last year’s tournament produced what is now considered one of the defining Kevin moments in Bert & Ernie history. After getting aggressively cut off by a bartender mid-round, emotions were high, negotiations became delicate, at one point, the situation escalated to such a level that a mid-round wardrobe change somehow became necessary. And yet, against all odds, not only did he stay on the course, but later in the day he was taking shots with the very bartender who had cut him off in the first place. A complete emotional arc. That sequence perfectly captures the Kevin Butcher experience. When Kevin is locked in, he’s dangerous. When Kevin is unraveling, he’s arguably even more entertaining.", photo:"butch.jpg"},
+  {name:'Steve Chonka',      hdcp:'7',    team:'pool',     initials:'SC',   badges:[{cls:'badge-captain-red',txt:'⭐⭐⭐ Paid In Full'}],  bio:"Steve arrives at every tournament with his bucket hat firmly planted like a man who has fully detached from outside judgment and intends to stay that way for 36 holes. The hat has become less of an accessory and more of a psychological tactic — opponents see it and immediately assume they’re about to lose money. Officially, Steve claims to be around a 12 handicap. Unofficially, tournament investigators have begun looking into whether that number was assembled using manipulated data, selective score reporting, and outright deception. Every group has one guy who casually stripes it all day while acting surprised the ball keeps ending up in the fairway. That guy is Steve. What makes him dangerous is the combination of actual ability and emotional instability. Last year he reportedly called out Chris Clark for applying chapstick to a driver — a sentence that sounds fake until you meet Steve. Despite all of this, Steve remains one of the steadiest competitors in the tournament. While others unravel physically, mentally, or chemically by the afternoon rounds, Steve continues methodically working around the course in the bucket hat, quietly taking people’s money and pretending he has no idea how it keeps happening.", photo:"chonka.jpg"},
+  {name:'Teal Taylor',       hdcp:'11',   team:'pool',     initials:'TT',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Teal is the only guy named after a color in the field who voluntarily purchased a plane ticket specifically to participate in this tournament — a decision that demonstrates either remarkable loyalty or a complete collapse in personal judgment. Either way, commitment levels cannot be questioned. He’s flying across state lines to play 36 holes a day with a group of degenerates operating under rules largely controlled by Matt Deck. On the course, most notably, he has one of the few documented negative-yardage drives in tournament history. Most importantly, Teal understands the assignment. He didn’t come for pristine golf or personal growth. He came to survive the weekend, participate in the chaos, and spend time golfing with the boys — and in that regard, he may already be winning.", photo:"teal.jpg"},
+  {name:'Ryan Strain',       hdcp:'15',   team:'pool',     initials:'RS',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"A respectable golfer and, somehow, the Head Baseball Coach at MSU Denver, he arrives with the leadership qualities you’d expect — and the decision-making you absolutely wouldn’t. Never one to turn down a beer, he operates at a steady pace both on the course and at the cooler, often simultaneously. Known for maintaining strong relationships — including a now-legendary connection with his parents’ neighbor’s daughter — his focus is split at best. Don’t expect full attention during a round; he’s usually on his phone mid-fairway, actively recruiting players like the season depends on it. A former minivan operator turned “golf trip veteran,” he brings experience, unpredictability, and just enough talent to be dangerous. Tournament officials have accepted that his priorities will never fully align with golf — and frankly, that’s what makes him a problem.", photo:"strain.jpg"},
+  {name:'Matt Moore',        hdcp:'9',    team:'pool',     initials:'MM',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Matt Moore enters the Bert & Ernie Invitational fully aware of what this group is capable of. He’s spent years observing the chaos from the safety of the softball dugout, watching friendships deteriorate over gimmie putts and hearing stories that should’ve stayed off the record. Most reasonable people would’ve declined the invite. Matt accepted immediately. Known as the sweatiest man on the golf course regardless of temperature, Matt approaches every round like he’s playing 36 holes inside a sauna. He almost certainly carries a backup shirt in his golf bag — a decision that could become vital if Butch gets cut off and requires emergency wardrobe support midway through the day. He may not fully understand what he signed up for, but at this point it’s too late to turn back.", photo:"moore.jpg"},
+  {name:'Matt Deck',         hdcp:'15',   team:'pool',    initials:'MD',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Matt Deck has spent nearly a decade embedded in the Bert & Ernie ecosystem, and somehow his defining legacy remains being on the losing side of approximately 8 out of the last 9 years — an achievement statistically improbable. At this point, people are less surprised when Matt loses and more surprised when his team briefly builds momentum before the inevitable collapse arrives. Despite the historical results, Matt carries himself with the confidence of a reigning champion. Every year by Saturday afternoon he can usually be found attempting to start the Ah Ramba or changing the rules to be in his favor. On the course, Deck’s game runs almost entirely on confidence and emotion. A single flushed iron shot can completely reset his mental state and convince him he’s officially back. He’s the type of golfer capable of talking himself into a comeback at any moment — which honestly makes him dangerous in match play. What Matt lacks in historical results, he more than compensates for with commitment to the event itself. Few people care more about the trip, the competition, and the overall chaos of the weekend. He embraces the gambling, the chirping, the side games, and the full emotional rollercoaster of 36 holes a day with complete sincerity.", photo:"deck.jpg"},
+  {name:'Eric Fitzgerald',   hdcp:'22',   team:'pool',    initials:'EF',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Eric Fitzgerald enters the Bert & Ernie Invitational with the confidence of a scratch golfer and the handicap of a man who once took an eleven and called it “strategic.” As Blue Team Captain, Fitz brings energy, volume, and an unwavering belief that momentum is always one good shot away — even immediately after snap-hooking a drive into another zip code. Physically, Fitz faces one major equipment issue, there is not a hat currently manufactured on earth that comfortably fits his head. Multiple brands have tried and failed. At this point, the only potential solution may be Steve’s bucket hat, which possesses enough surface area and structural integrity to potentially qualify as temporary shelter. Socially, he has unsuccessfully slid into every waitress who has ever worked at Romes DMs, with a level of persistence that should probably be studied professionally. To date, results have remained overwhelmingly negative, though that has done absolutely nothing to discourage future attempts. Additionally, abuelas in Monument are being advised to remain alert and avoid unnecessary eye contact throughout tournament weekend. On the golf course, Fitz is chaos in human form. He can shotgun a beer faster than most people can open one. Every tournament needs someone willing to fully embrace the nonsense, and Fitz has dedicated himself to that role completely. Most importantly, he’s the emotional engine of the Blue Team.", photo:"fitz.jpg"},
+  {name:'Cory Blair',        hdcp:'24',   team:'pool',    initials:'CB',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Cory arrives at the Bert & Ernie Invitational with the confidence of a man who has already convinced himself he’s about to have the best golf weekend of his life — regardless of what the scorecard eventually says. On the course, Cory thrives in chaos. Structured golf is not really his environment. He becomes significantly more dangerous once the gambling starts escalating, the formats get confusing, and everyone begins operating on limited hydration and questionable decision-making. The worse the environment gets, the more comfortable he seems to become. He’s also the type of player capable of producing both the shot of the tournament and the worst hole anyone has ever witnessed within a 20-minute stretch. A flushed approach to three feet is immediately followed by a tee shot that forces the group to discuss local property boundaries. Yet somehow, Cory never appears rattled. He simply reloads, laughs, and starts negotiating presses like nothing happened. He came for 36 holes a day, escalating side bets, unreasonable confidence, and surviving a weekend with the boys. In many ways, that makes him perfectly built for this event.", photo:"cory.jpg"},
+  {name:'Brian Fogg',        hdcp:'10',   team:'pool',    initials:'BF',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Brian Fogg enters the Bert & Ernie Invitational carrying the energy of a man who absolutely believes he’s going to “keep things under control” this weekend despite overwhelming evidence suggesting otherwise. Brian is the type of player who remembers every stroke, every press, every side bet, and every vaguely verbal gambling agreement made three holes earlier. If there’s a scoring dispute, there’s a strong chance Brian already has witness testimony prepared. Physically, he carries himself like a golfer who has seen some things. By the second 36-hole day, his swing may begin to resemble a man trying to unload furniture from a moving truck, but mentally he remains locked in. He is not flashy, not particularly emotional, and rarely the loudest guy in the group — which somehow makes him even more dangerous once matches tighten up. Brian also possesses one of the tournament’s most valuable traits: consistency. Make no mistake — Brian Fogg is exactly the kind of player capable of ruining someone’s Ryder Cup weekend one steady fairway at a time.", photo:"fogg.jpg"},
+  {name:'Tyler Dorworth',    hdcp:'15',   team:'pool',    initials:'TD',   badges:[{cls:'badge-captain-red',txt:'⭐⭐⭐ Paid In Full'}],  bio:"Tyler brings a level of volatility to the Bert & Ernie Invitational that tournament leadership has simply accepted as unavoidable. Every group has one player who operates one bad bounce away from escalating a casual disagreement into a full-contact sporting event — Tyler is that player. Whether it’s a fist fight, a headbutt, or an argument over a conceded putt that spirals wildly out of proportion, he approaches competition with the emotional control of a man trying to defend his honor in a medieval village. Off the course, Tyler’s résumé raises even more questions. He owns a moped entirely unironically, once drove a neon green Wrangler filled with rubber ducks. On the course, scorekeeping exists more as a collaborative storytelling exercise than a strict mathematical process. Most importantly, Tyler and Zach operate as a dangerously co-dependent competitive unit. Tyler is usually the first to suggest doing something reckless, and Zach is usually close behind agreeing to it. Separately, they are manageable. Together, they become an operational concern for the entire event.", photo:"tyler.jpg"},
+  {name:'Lorin Unruh',       hdcp:'18',   team:'pool',    initials:'LU',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Lorin is the man largely responsible for bringing the Bert & Ernie Invitational to Colorado Springs — or at least he was until several of his “guaranteed connections” quietly collapsed under pressure. What originally began as a masterclass in local networking eventually turned into a full-scale recovery operation. A longtime local with deep knowledge of the area, Lorin contributes valuable intel, logistical support, and, most importantly, access to transportation — assuming his girlfriend is still willing to participate by July. On the golf course, Lorin’s game is best described as “strategic.” Off the tee he hits it roughly the same distance as a senior citizen using persimmon woods into a mild headwind, but what he lacks in power he attempts to replace with vibes, local confidence, and an occasional suspiciously optimistic read on the greens. Despite the roster setbacks, Lorin remains fully committed to the event and to golfing with the boys. Tournament leadership would like to formally thank him for his efforts — and preemptively thank his girlfriend for surviving the weekend.", photo:"lorin2.jpg"},
+  {name:'Adam Lewton',       hdcp:'6',    team:'pool',    initials:'A2',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"The other Adam arrives carrying a suspiciously legitimate 5.6 handicap and the quiet confidence of someone who absolutely believes he’s the best golfer in the group — and honestly, he may have a case. Outside of golf, he maintains a low profile… unless you’re active on Untappd, where his craft beer résumé borders on celebrity status. Most notably, he secured the coveted Pride Month badge in both 2020 and 2021, proving a level of commitment to the game that deserves respect. He keeps no LinkedIn profile photo, presumably to avoid recognition from fans of his beer reviews, but professionally works as a Portfolio Manager, making him the tournament’s leading authority on recovering gambling losses and explaining why doubling down was actually the right play statistically. This guy keeps a low profile and a low handicap.", photo:"adam2.jpg"},
+  {name:'Zach Light',        hdcp:'15',   team:'pool',    initials:'ZL',   badges:[{cls:'badge-captain-red',txt:'⭐ Paid Deposit'}],      bio:"Zach's pre-round routine consists of one beer and immediately removing his shirt like he’s preparing for a sanctioned backyard fight instead of a tee time. By hole three, tarps are almost certainly off, confidence is sky high, and basic social restraint has left the premises entirely. His golf swing is somehow both athletic and deeply concerning: part hockey slapshot, part squat exercise, part attempt to fully extend every muscle in his body simultaneously. He also carries himself as the unofficial enforcer of the tournament — although important context must be added: Zach will absolutely fight… but preferably only if Tyler is already fighting too. Alone, he’s measured. In tandem, they become a public relations concern. To his credit, Zach is generally considered the better golfer between himself and Tyler, which becomes increasingly important once Tyler begins interpreting stroke counts creatively. Tournament organizers have accepted that containing Zach is unrealistic. The current strategy is simply to keep him hydrated and pointed in the correct direction.", photo:"zach.jpg"},
 ];
 
 // ── STATE ──────────────────────────────────────────────────────────────
@@ -534,9 +624,65 @@ function renderAll() {
   renderPlayerSection('red');
   renderPlayerSection('blue');
  updateHomeScore();
-renderDraftBoard();
+function renderDraftBoard() {
+  const poolPlayers = state.players.filter(p => p.team === "pool");
+  const redPlayers = state.players.filter(p => p.team === "red");
+  const bluePlayers = state.players.filter(p => p.team === "blue");
+
+  document.getElementById("draft-pool").innerHTML =
+    poolPlayers.map(p => draftPlayerCard(p)).join("");
+
+  document.getElementById("draft-red").innerHTML =
+    redPlayers.map(p => draftPlayerCard(p)).join("");
+
+  document.getElementById("draft-blue").innerHTML =
+    bluePlayers.map(p => draftPlayerCard(p)).join("");
 }
 
+function draftPlayerCard(p) {
+  return `
+    <div class="draft-player" draggable="true" ondragstart="dragPlayer(event, '${p.name}')">
+      <span>${p.name}</span>
+      <small>Hdcp ${p.hdcp}</small>
+    </div>
+  `;
+};
+}
+
+let draggedPlayerName = null;
+
+function dragPlayer(event, playerName) {
+  draggedPlayerName = playerName;
+  event.dataTransfer.setData("text/plain", playerName);
+}
+
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+function dropPlayer(event, newTeam) {
+  event.preventDefault();
+
+  const playerName = event.dataTransfer.getData("text/plain") || draggedPlayerName;
+  const player = state.players.find(p => p.name === playerName);
+
+  if (!player) return;
+
+  player.team = newTeam;
+
+  saveState();
+  renderAll();
+}
+
+function resetDraftBoard() {
+  state.players.forEach(p => {
+    p.team = "pool";
+  });
+
+  saveState();
+  renderAll();
+}
+ 
 function avatarHTML(p) {
   if(p.photo) return `<img src="${p.photo}" alt="${p.name}">`;
   return p.initials;
