@@ -693,16 +693,30 @@ function avatarHTML(p) {
 }
 
 function renderPlayerSection(team) {
-  const players=state.players.filter(p=>p.team===team);
-  document.getElementById(team+'-players').innerHTML=players.map(p=>{
-    const badges=(p.badges||[]).map(b=>`<span class="pc-badge ${b.cls}">${b.txt}</span>`).join('');
-    const rec=state.records[p.name]||'0-0-0';
+  const players = state.players.filter(p => p.team === team);
+
+  const target = document.getElementById(team + '-players');
+  if (!target) return;
+
+  if (!players.length) {
+    target.innerHTML = `<div style="color:#777;font-size:.85rem;">No players drafted yet.</div>`;
+    return;
+  }
+
+  target.innerHTML = players.map(p => {
+    const badges = (p.badges || []).map(b => `<span class="pc-badge ${b.cls}">${b.txt}</span>`).join('');
+    const rec = state.records[p.name] || '0-0-0';
+
     return `<div class="player-card">
       <div class="pc-top">
         <div class="pc-avatar ${team}">${avatarHTML(p)}</div>
         <div class="pc-header">
           <div class="pc-name">${p.name}</div>
-          <div class="pc-meta"><span class="pc-hdcp">Hdcp: ${p.hdcp}</span><span class="pc-record">${rec} W-L-H</span>${badges}</div>
+          <div class="pc-meta">
+            <span class="pc-hdcp">Hdcp: ${p.hdcp}</span>
+            <span class="pc-record">${rec} W-L-H</span>
+            ${badges}
+          </div>
         </div>
       </div>
       <div class="pc-bio">${p.bio}</div>
@@ -868,14 +882,19 @@ function show(id) {
 }
 
 function renderDraftBoard() {
+  const pool = document.getElementById("draft-pool");
+  const red = document.getElementById("draft-red");
+  const blue = document.getElementById("draft-blue");
+
+  if (!pool || !red || !blue) return;
+
+  const poolPlayers = state.players.filter(p => !p.team || p.team === "pool");
   const redPlayers = state.players.filter(p => p.team === "red");
   const bluePlayers = state.players.filter(p => p.team === "blue");
 
-  document.getElementById("draft-red").innerHTML =
-    redPlayers.map(p => `<div class="draft-player">${p.name}</div>`).join("");
-
-  document.getElementById("draft-blue").innerHTML =
-    bluePlayers.map(p => `<div class="draft-player">${p.name}</div>`).join("");
+  pool.innerHTML = poolPlayers.map(p => draftPlayerCard(p)).join("");
+  red.innerHTML = redPlayers.map(p => draftPlayerCard(p)).join("");
+  blue.innerHTML = bluePlayers.map(p => draftPlayerCard(p)).join("");
 }
 
  loadState();
