@@ -424,10 +424,21 @@
 <!-- PLAYERS -->
 <section id="players">
   <div class="sec-title">The <span>Players</span></div><div class="sec-line"></div>
-  <div class="players-split">
-    <div><div class="team-section-title red" id="red-team-title">🔴 Team Red</div><div id="red-players" class="team-player-grid"></div></div>
-    <div><div class="team-section-title blue" id="blue-team-title">🔵 Team Blue</div><div id="blue-players" class="team-player-grid"></div></div>
+  <div class="team-section-title" style="background:linear-gradient(90deg,var(--gold),transparent);color:#111;">
+  ⚪ Available Players
+</div>
+<div id="pool-players" class="team-player-grid" style="margin-bottom:28px;"></div>
+
+<div class="players-split">
+  <div>
+    <div class="team-section-title red" id="red-team-title">🔴 Team Red</div>
+    <div id="red-players" class="team-player-grid"></div>
   </div>
+  <div>
+    <div class="team-section-title blue" id="blue-team-title">🔵 Team Blue</div>
+    <div id="blue-players" class="team-player-grid"></div>
+  </div>
+</div>
 </section>
 
 <!-- INFO -->
@@ -624,8 +635,9 @@ function renderAll() {
       </div>`;}).join('')}</div>`;
   }).join('');
 
-  renderPlayerSection('red');
-  renderPlayerSection('blue');
+renderPlayerSection('pool');
+renderPlayerSection('red');
+renderPlayerSection('blue');
  updateHomeScore();
  renderDraftBoard();
 }
@@ -695,8 +707,10 @@ function avatarHTML(p) {
 function renderPlayerSection(team) {
   const players = state.players.filter(p => p.team === team);
 
-  const target = document.getElementById(team + '-players');
-  if (!target) return;
+ const target = document.getElementById(team + '-players');
+if (!target) return;
+
+target.innerHTML = players.map(p=>{
 
   if (!players.length) {
     target.innerHTML = `<div style="color:#777;font-size:.85rem;">No players drafted yet.</div>`;
