@@ -103,8 +103,9 @@
   .team-section-title { font-size:.75rem; letter-spacing:3px; text-transform:uppercase; padding:10px 16px; margin-bottom:12px; border-radius:4px; }
   .team-section-title.red{background:linear-gradient(90deg,var(--red),transparent);}
   .team-section-title.blue{background:linear-gradient(90deg,var(--blue),transparent);}
-  .player-card { background:#111; border:1px solid #1e1e1e; border-radius:8px; margin-bottom:14px; overflow:hidden; transition:border-color .2s,transform .15s; }
-  .player-card:hover{border-color:#444;transform:translateY(-2px);}
+  .player-card { background:#111; border:1px solid #1e1e1e; border-radius:8px; overflow:hidden; transition:border-color .2s,transform .15s; height:100%; }
+  .player-card:hover{ border-color:#444;transform:translateY(-2px);}
+  .team-player-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:14px; align-items:start; }
   .pc-top { display:flex; align-items:center; gap:14px; padding:16px 16px 10px; }
   .pc-avatar { width:250px; height:250px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:3.5rem; font-weight:900; flex-shrink:0; border:4px solid #2a2a2a; overflow:hidden; background:#1a1a1a; object-fit:cover; }
   .pc-avatar.red{border-color:var(--red);} .pc-avatar.blue{border-color:var(--blue);}
@@ -331,8 +332,8 @@
 <section id="players">
   <div class="sec-title">The <span>Players</span></div><div class="sec-line"></div>
   <div class="players-split">
-    <div><div class="team-section-title red" id="red-team-title">🔴 Team Red</div><div id="red-players"></div></div>
-    <div><div class="team-section-title blue" id="blue-team-title">🔵 Team Blue</div><div id="blue-players"></div></div>
+    <div><div class="team-section-title red" id="red-team-title">🔴 Team Red</div><div id="red-players" class="team-player-grid"></div></div>
+    <div><div class="team-section-title blue" id="blue-team-title">🔵 Team Blue</div><div id="blue-players" class="team-player-grid"></div></div>
   </div>
 </section>
 
