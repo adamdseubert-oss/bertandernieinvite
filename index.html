@@ -706,11 +706,9 @@ function avatarHTML(p) {
 
 function renderPlayerSection(team) {
   const players = state.players.filter(p => p.team === team);
+  const target = document.getElementById(team + '-players');
 
- const target = document.getElementById(team + '-players');
-if (!target) return;
-
-target.innerHTML = players.map(p=>{
+  if (!target) return;
 
   if (!players.length) {
     target.innerHTML = `<div style="color:#777;font-size:.85rem;">No players drafted yet.</div>`;
@@ -718,7 +716,10 @@ target.innerHTML = players.map(p=>{
   }
 
   target.innerHTML = players.map(p => {
-    const badges = (p.badges || []).map(b => `<span class="pc-badge ${b.cls}">${b.txt}</span>`).join('');
+    const badges = (p.badges || [])
+      .map(b => `<span class="pc-badge ${b.cls}">${b.txt}</span>`)
+      .join('');
+
     const rec = state.records[p.name] || '0-0-0';
 
     return `<div class="player-card">
@@ -737,7 +738,7 @@ target.innerHTML = players.map(p=>{
     </div>`;
   }).join('');
 }
-
+ 
 // ── ADMIN ──────────────────────────────────────────────────────────────
 function adminLogin() {
   if(document.getElementById('admin-pw').value===ADMIN_PW) {
