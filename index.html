@@ -624,6 +624,8 @@ function renderAll() {
   renderPlayerSection('red');
   renderPlayerSection('blue');
  updateHomeScore();
+ renderDraftBoard()
+}
 function renderDraftBoard() {
   const pool = document.getElementById("draft-pool");
   const red = document.getElementById("draft-red");
@@ -704,6 +706,8 @@ function renderPlayerSection(team) {
     </div>`;
   }).join('');
 }
+
+ loadstate();
 
 // ── ADMIN ──────────────────────────────────────────────────────────────
 function adminLogin() {
