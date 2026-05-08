@@ -379,7 +379,7 @@
       <h3>Team Draft Board</h3>
       <p>Drag players into Team Red or Team Blue. Picks save automatically.</p>
     </div>
-    <button class="btn btn-sm" onclick="resetDraftBoard()">Reset Draft</button>
+    <button class="btn btn-sm" onclick="resetDraftBoard()">Move Everyone to Available</button>
   </div>
 
   <div class="draft-teams draft-teams-3">
@@ -625,18 +625,19 @@ function renderAll() {
   renderPlayerSection('blue');
  updateHomeScore();
 function renderDraftBoard() {
-  const poolPlayers = state.players.filter(p => p.team === "pool");
+  const pool = document.getElementById("draft-pool");
+  const red = document.getElementById("draft-red");
+  const blue = document.getElementById("draft-blue");
+
+  if (!pool || !red || !blue) return;
+
+  const poolPlayers = state.players.filter(p => !p.team || p.team === "pool");
   const redPlayers = state.players.filter(p => p.team === "red");
   const bluePlayers = state.players.filter(p => p.team === "blue");
 
-  document.getElementById("draft-pool").innerHTML =
-    poolPlayers.map(p => draftPlayerCard(p)).join("");
-
-  document.getElementById("draft-red").innerHTML =
-    redPlayers.map(p => draftPlayerCard(p)).join("");
-
-  document.getElementById("draft-blue").innerHTML =
-    bluePlayers.map(p => draftPlayerCard(p)).join("");
+  pool.innerHTML = poolPlayers.map(p => draftPlayerCard(p)).join("");
+  red.innerHTML = redPlayers.map(p => draftPlayerCard(p)).join("");
+  blue.innerHTML = bluePlayers.map(p => draftPlayerCard(p)).join("");
 }
 
 function draftPlayerCard(p) {
@@ -646,9 +647,7 @@ function draftPlayerCard(p) {
       <small>Hdcp ${p.hdcp}</small>
     </div>
   `;
-};
 }
-
 let draggedPlayerName = null;
 
 function dragPlayer(event, playerName) {
