@@ -466,10 +466,10 @@
   <table class="schedule-table">
     <thead><tr><th>Round</th><th>Format</th><th>Day</th><th>Matches</th><th>Points</th></tr></thead>
     <tbody>
-      <tr><td>Round 1 — Morning</td><td><span class="format-tag fmt-foursomes">Foursomes</span></td><td>July 24</td><td>4</td><td>4</td></tr>
-      <tr><td>Round 2 — Afternoon</td><td><span class="format-tag fmt-fourballs">Four-Balls</span></td><td>July 24</td><td>4</td><td>4</td></tr>
-      <tr><td>Round 3 — Morning</td><td><span class="format-tag fmt-foursomes">Foursomes</span></td><td>July 25</td><td>4</td><td>4</td></tr>
-      <tr><td>Round 4 — Afternoon</td><td><span class="format-tag fmt-singles">Singles</span></td><td>July 25</td><td>8</td><td>8</td></tr>
+      <tr><td>Round 1 — Morning</td><td><span class="format-tag fmt-foursomes">Best Ball</span></td><td>July 24</td><td>4</td><td>4</td></tr>
+      <tr><td>Round 2 — Afternoon</td><td><span class="format-tag fmt-fourballs">Shamble</span></td><td>July 24</td><td>4</td><td>4</td></tr>
+      <tr><td>Round 3 — Morning</td><td><span class="format-tag fmt-foursomes">TBD</span></td><td>July 25</td><td>4</td><td>4</td></tr>
+      <tr><td>Round 4 — Afternoon</td><td><span class="format-tag fmt-singles">TBD</span></td><td>July 25</td><td>8</td><td>8</td></tr>
     </tbody>
   </table>
 </section>
@@ -534,9 +534,9 @@ const ADMIN_PW = "bertandernie2026";
 
 const ROUNDS_DEF = [
   {name:"Round 1 — Best Ball", day:"July 24 AM", format:"Best Ball", matches:4, pts:4},
-  {name:"Round 2 — TBD", day:"July 24 PM", format:"TBD",      matches:4, pts:4},
+  {name:"Round 2 — Shamble", day:"July 24 PM", format:"Shamble",      matches:4, pts:4},
   {name:"Round 3 — TBD", day:"July 25 AM", format:"TBD", matches:4, pts:4},
-  {name:"Round 4 — Singles",   day:"July 25 PM", format:"Singles",        matches:8, pts:8},
+  {name:"Round 4 — TBD",   day:"July 25 PM", format:"TBD",        matches:8, pts:8},
 ];
 
 const MATCHUPS_DEF = [
@@ -544,10 +544,10 @@ const MATCHUPS_DEF = [
   {r:0,redP:"Brian Fogg & Cory Blair",blueP:"Steve Chonka & Eric Fitzgerald"},
   {r:0,redP:"Matt Deck & Johnny Blomquist",blueP:"Matt Moore & Zach Light"},
   {r:0,redP:"Adam Seubert & Ryan Strain",blueP:"Teal Taylor & Lorin Unruh"},
+  {r:1,redP:"Johnny Blomquist & Cory Blair",blueP:"Steve Chonka & Tyler Dorworth"},
+  {r:1,redP:"Brian Fogg & Kevin Butcher",blueP:"Adam Lewton & Teal Taylor"},
   {r:1,redP:"Adam Seubert & Aaron Whitener",blueP:"Eric Fitzgerald & Matt Moore"},
   {r:1,redP:"Matt Deck & Ryan Strain",blueP:"Lorin Unruh B & Zach Light"},
-  {r:1,redP:"Brian Fogg & Kevin Butcher",blueP:"Adam Lewton & Teal Taylor"},
-  {r:1,redP:"Johnny Blomquist & Cory Blair",blueP:"Steve Chonka & Tyler Dorworth"},
   {r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},{r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},
   {r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},{r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},
   {r:3,redP:"Player 1",blueP:"Player A"},{r:3,redP:"Player 2",blueP:"Player B"},
