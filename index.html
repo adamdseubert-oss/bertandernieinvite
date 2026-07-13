@@ -552,8 +552,8 @@
     </div>
 
     <div class="admin-section">
-      <h3>Matchup Results</h3>
-      <p style="color:#666;font-size:.75rem;font-weight:normal;margin-bottom:16px">Set the result for each individual match.</p>
+      <h3>Matchups &amp; Tee Times</h3>
+      <p style="color:#666;font-size:.75rem;font-weight:normal;margin-bottom:16px">Edit the round, tee time, Red pairing, Blue pairing, and result for every match.</p>
       <div id="admin-matchups"></div>
       <button class="btn btn-gold" style="margin-top:8px" onclick="saveMatchups()">Save Matchups</button>
       <span class="save-notice" id="mu-saved">✓ Saved!</span>
@@ -882,6 +882,14 @@ function adminLogout() {
   document.getElementById('admin-pw').value='';
 }
 
+function escapeAttr(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function buildAdminForms() {
   document.getElementById('a-red-name').value=state.redName;
   document.getElementById('a-blue-name').value=state.blueName;
@@ -903,15 +911,37 @@ function buildAdminForms() {
     </div>`).join('');
 
   document.getElementById('admin-matchups').innerHTML=state.matchups.map((m,i)=>`
-    <div style="display:grid;grid-template-columns:1fr 1fr 130px;gap:8px;align-items:center;margin-bottom:8px;font-size:.78rem">
-      <span style="color:#ccc">${m.redP}</span>
-      <span style="color:#ccc">${m.blueP}</span>
-      <select id="mu-${i}">
-        <option value="" ${m.result===''?'selected':''}>Upcoming</option>
-        <option value="R W" ${m.result==='R W'?'selected':''}>Red Wins</option>
-        <option value="B W" ${m.result==='B W'?'selected':''}>Blue Wins</option>
-        <option value="H" ${m.result==='H'?'selected':''}>Halved</option>
-      </select>
+    <div style="margin-bottom:16px;padding:16px;background:#171717;border:1px solid #2a2a2a;border-radius:8px">
+      <div style="color:var(--gold);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Match ${i + 1}</div>
+      <div class="form-row" style="grid-template-columns:120px 140px 1fr 1fr 150px">
+        <div class="form-group">
+          <label>Round</label>
+          <select id="mu-round-${i}">
+            ${state.rounds.map((r,ri)=>`<option value="${ri}" ${Number(m.r)===ri?'selected':''}>Round ${ri+1}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tee Time</label>
+          <input id="mu-tee-${i}" value="${escapeAttr(m.teeTime || 'TBD')}" placeholder="e.g. 7:30 AM">
+        </div>
+        <div class="form-group">
+          <label>Red Team / Players</label>
+          <input id="mu-red-${i}" value="${escapeAttr(m.redP || '')}" placeholder="Red pairing">
+        </div>
+        <div class="form-group">
+          <label>Blue Team / Players</label>
+          <input id="mu-blue-${i}" value="${escapeAttr(m.blueP || '')}" placeholder="Blue pairing">
+        </div>
+        <div class="form-group">
+          <label>Result</label>
+          <select id="mu-${i}">
+            <option value="" ${m.result===''?'selected':''}>Upcoming</option>
+            <option value="R W" ${m.result==='R W'?'selected':''}>Red Wins</option>
+            <option value="B W" ${m.result==='B W'?'selected':''}>Blue Wins</option>
+            <option value="H" ${m.result==='H'?'selected':''}>Halved</option>
+          </select>
+        </div>
+      </div>
     </div>`).join('');
 
   buildAdminBets();
@@ -1004,7 +1034,26 @@ function showNotice(id) {
 }
 function saveTeamNames() { state.redName=document.getElementById('a-red-name').value||'Team Red'; state.blueName=document.getElementById('a-blue-name').value||'Team Blue'; saveState();renderAll();showNotice('tn-saved'); }
 function saveRounds() { state.rounds.forEach((r,i)=>{ const rv=document.getElementById(`r-red-${i}`).value,bv=document.getElementById(`r-blue-${i}`).value; r.redScore=rv===''?'—':rv; r.blueScore=bv===''?'—':bv; r.status=document.getElementById(`r-status-${i}`).value; }); saveState();renderAll();showNotice('rd-saved'); }
-function saveMatchups() { state.matchups.forEach((m,i)=>{ m.result=document.getElementById(`mu-${i}`).value; }); saveState();renderAll();showNotice('mu-saved'); }
+function saveMatchups() {
+  state.matchups.forEach((m,i) => {
+    const roundEl = document.getElementById(`mu-round-${i}`);
+    const teeEl = document.getElementById(`mu-tee-${i}`);
+    const redEl = document.getElementById(`mu-red-${i}`);
+    const blueEl = document.getElementById(`mu-blue-${i}`);
+    const resultEl = document.getElementById(`mu-${i}`);
+
+    m.r = Number(roundEl?.value ?? m.r);
+    m.teeTime = teeEl?.value.trim() || 'TBD';
+    m.redP = redEl?.value.trim() || 'TBD';
+    m.blueP = blueEl?.value.trim() || 'TBD';
+    m.result = resultEl?.value || '';
+  });
+
+  saveState();
+  renderAll();
+  buildAdminForms();
+  showNotice('mu-saved');
+}
 
 function show(id) {
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
