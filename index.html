@@ -86,6 +86,7 @@
   .round-format { font-size:.7rem; color:#666; text-align:center; padding-bottom:12px; letter-spacing:1px; text-transform:uppercase; }
 
   .round-label { font-size:.75rem; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin:24px 0 8px; border-left:3px solid var(--gold); padding-left:12px; }
+  .tee-time { display:inline-block; color:var(--gold); background:#211900; border:1px solid #5a4300; border-radius:20px; padding:3px 9px; font-size:.64rem; letter-spacing:1px; white-space:nowrap; }
   .matchups-grid { display:grid; gap:8px; margin-bottom:8px; }
   .matchup-card { background:#111; border:1px solid #222; border-radius:6px; overflow:hidden; display:grid; grid-template-columns:1fr auto 1fr; }
   .mplayer { padding:12px 14px; display:flex; align-items:center; gap:8px; }
@@ -370,7 +371,7 @@
     <div class="countdown-wrap">
       <div class="countdown-label">The Countdown Is On</div>
       <div class="countdown-title">Bert &amp; Ernie Invitational</div>
-      <div class="countdown-date">Thursday, July 23, 2026 at 8:00 AM</div>
+      <div class="countdown-date">Friday, July 24, 2026 at 7:30 AM</div>
       <div class="countdown-grid">
         <div class="countdown-unit"><div class="countdown-value" id="count-days">0</div><div class="countdown-name">Days</div></div>
         <div class="countdown-unit"><div class="countdown-value" id="count-hours">0</div><div class="countdown-name">Hours</div></div>
@@ -587,20 +588,26 @@ const ROUNDS_DEF = [
 ];
 
 const MATCHUPS_DEF = [
-  {r:0,redP:"Kevin Butcher & Aaron Whitener",blueP:"Adam Lewton & Tyler Dorworth"},
-  {r:0,redP:"Brian Fogg & Cory Blair",blueP:"Steve Chonka & Eric Fitzgerald"},
-  {r:0,redP:"Matt Deck & Johnny Blomquist",blueP:"Matt Moore & Zach Light"},
-  {r:0,redP:"Adam Seubert & Ryan Strain",blueP:"Teal Taylor & Lorin Unruh"},
-  {r:1,redP:"Johnny Blomquist & Cory Blair",blueP:"Steve Chonka & Tyler Dorworth"},
-  {r:1,redP:"Brian Fogg & Kevin Butcher",blueP:"Adam Lewton & Teal Taylor"},
-  {r:1,redP:"Adam Seubert & Aaron Whitener",blueP:"Eric Fitzgerald & Matt Moore"},
-  {r:1,redP:"Matt Deck & Ryan Strain",blueP:"Lorin Unruh & Zach Light"},
-  {r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},{r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},
-  {r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},{r:2,redP:"TBD & TBD",blueP:"TBD & TBD"},
-  {r:3,redP:"Player 1",blueP:"Player A"},{r:3,redP:"Player 2",blueP:"Player B"},
-  {r:3,redP:"Player 3",blueP:"Player C"},{r:3,redP:"Player 4",blueP:"Player D"},
-  {r:3,redP:"Player 5",blueP:"Player E"},{r:3,redP:"Player 6",blueP:"Player F"},
-  {r:3,redP:"Player 7",blueP:"Player G"},{r:3,redP:"Player 8",blueP:"Player H"},
+  {r:0,teeTime:"7:30 AM",redP:"Kevin Butcher & Aaron Whitener",blueP:"Adam Lewton & Tyler Dorworth"},
+  {r:0,teeTime:"7:40 AM",redP:"Brian Fogg & Cory Blair",blueP:"Steve Chonka & Eric Fitzgerald"},
+  {r:0,teeTime:"7:50 AM",redP:"Matt Deck & Johnny Blomquist",blueP:"Matt Moore & Zach Light"},
+  {r:0,teeTime:"8:00 AM",redP:"Adam Seubert & Ryan Strain",blueP:"Teal Taylor & Lorin Unruh"},
+  {r:1,teeTime:"1:40 PM",redP:"Johnny Blomquist & Cory Blair",blueP:"Steve Chonka & Tyler Dorworth"},
+  {r:1,teeTime:"1:50 PM",redP:"Brian Fogg & Kevin Butcher",blueP:"Adam Lewton & Teal Taylor"},
+  {r:1,teeTime:"2:00 PM",redP:"Adam Seubert & Aaron Whitener",blueP:"Eric Fitzgerald & Matt Moore"},
+  {r:1,teeTime:"2:10 PM",redP:"Matt Deck & Ryan Strain",blueP:"Lorin Unruh & Zach Light"},
+  {r:2,teeTime:"8:03 AM",redP:"TBD & TBD",blueP:"TBD & TBD"},
+  {r:2,teeTime:"8:13 AM",redP:"TBD & TBD",blueP:"TBD & TBD"},
+  {r:2,teeTime:"8:23 AM",redP:"TBD & TBD",blueP:"TBD & TBD"},
+  {r:2,teeTime:"8:33 AM",redP:"TBD & TBD",blueP:"TBD & TBD"},
+  {r:3,teeTime:"2:03 PM",redP:"Player 1",blueP:"Player A"},
+  {r:3,teeTime:"2:13 PM",redP:"Player 2",blueP:"Player B"},
+  {r:3,teeTime:"2:23 PM",redP:"Player 3",blueP:"Player C"},
+  {r:3,teeTime:"2:33 PM",redP:"Player 4",blueP:"Player D"},
+  {r:3,teeTime:"TBD",redP:"Player 5",blueP:"Player E"},
+  {r:3,teeTime:"TBD",redP:"Player 6",blueP:"Player F"},
+  {r:3,teeTime:"TBD",redP:"Player 7",blueP:"Player G"},
+  {r:3,teeTime:"TBD",redP:"Player 8",blueP:"Player H"},
 ];
 
 const PLAYERS_DEF = [
@@ -638,6 +645,8 @@ function loadState() {
     if (raw) {
       const saved = JSON.parse(raw);
       state = {...state, ...saved};
+      if (!Array.isArray(state.matchups)) state.matchups = MATCHUPS_DEF.map(m=>({...m,result:""}));
+      state.matchups = state.matchups.map((m, i) => ({...MATCHUPS_DEF[i], ...m, teeTime: MATCHUPS_DEF[i]?.teeTime || m.teeTime || "TBD"}));
       if (!Array.isArray(state.bets)) state.bets = [];
       state.bets = state.bets.map(b => ({
         id: b.id || Date.now().toString(36)+Math.random().toString(36).slice(2,7),
@@ -691,7 +700,7 @@ function renderAll() {
       else if(m.result==='H'){rt='½';bt='½';}
       return `<div class="matchup-card">
         <div class="mplayer"><div class="pnum red">R</div><div class="pname">${m.redP}<small>${state.redName}</small></div></div>
-        <div class="match-res"><span class="rs ${rc}">${rt}</span><span class="sep">/</span><span class="rs ${bc}">${bt}</span></div>
+        <div class="match-res" style="flex-direction:column;gap:5px"><span class="tee-time">${m.teeTime || 'TBD'}</span><div><span class="rs ${rc}">${rt}</span><span class="sep">/</span><span class="rs ${bc}">${bt}</span></div></div>
         <div class="mplayer right"><div class="pname" style="text-align:right">${m.blueP}<small>${state.blueName}</small></div><div class="pnum blue">B</div></div>
       </div>`;}).join('')}</div>`;
   }).join('');
@@ -1020,7 +1029,7 @@ function show(id) {
 
 
 function updateCountdown() {
-  const target = new Date('2026-07-23T08:00:00-06:00').getTime();
+  const target = new Date('2026-07-24T07:30:00-06:00').getTime();
   const now = Date.now();
   const remaining = Math.max(0, target - now);
   const days = Math.floor(remaining / 86400000);
