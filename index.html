@@ -292,6 +292,33 @@
 .draft-teams{display:flex;gap:20px;}
 .draft-col{flex:1;background:#1a1a1a;padding:10px;border-radius:6px;}
 .draft-player{padding:6px;border-bottom:1px solid #333;font-size:.85rem;}
+
+
+  /* BETTING LEDGER */
+  .bet-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px;}
+  .bet-stat{background:#111;border:1px solid #252525;border-top:3px solid var(--gold);border-radius:7px;padding:18px;}
+  .bet-stat-label{font-size:.62rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+  .bet-stat-value{font-size:1.45rem;color:#fff;}
+  .bet-table-wrap{overflow-x:auto;background:#111;border:1px solid #252525;border-radius:8px;}
+  .bet-table{width:100%;border-collapse:collapse;min-width:820px;}
+  .bet-table th{padding:12px;text-align:left;color:#888;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid #333;background:#181818;}
+  .bet-table td{padding:12px;border-bottom:1px solid #222;font-family:Arial,sans-serif;font-size:.82rem;color:#ccc;vertical-align:top;}
+  .bet-table tr:last-child td{border-bottom:none;}
+  .bet-status{display:inline-block;border-radius:20px;padding:3px 9px;font-size:.64rem;font-weight:900;text-transform:uppercase;}
+  .bet-status-pending{background:#2b250d;color:#f0c85a;}
+  .bet-status-won{background:#12351a;color:#69d67b;}
+  .bet-status-lost{background:#3a1111;color:#ef7777;}
+  .bet-status-push{background:#292929;color:#bbb;}
+  .bet-positive{color:#69d67b;font-weight:900;}
+  .bet-negative{color:#ef7777;font-weight:900;}
+  .empty-state{padding:32px;text-align:center;color:#777;font-family:Arial,sans-serif;}
+  .admin-bet-card{background:#191919;border:1px solid #303030;border-radius:8px;padding:16px;margin-bottom:12px;}
+  .admin-bet-card-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;}
+  .admin-bet-card-head strong{font-size:.82rem;color:#ddd;}
+  .btn-danger{background:#571616;color:#ff9999;}
+  .admin-bet-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  @media(max-width:760px){nav{padding:12px 14px;align-items:flex-start;gap:12px}.nav-links{gap:10px;flex-wrap:wrap;justify-content:flex-end}.nav-links a{font-size:.66rem}section{padding:40px 18px}.pc-avatar{width:110px;height:110px;font-size:2rem}.team-player-grid{grid-template-columns:1fr}.bet-summary{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -303,6 +330,7 @@
     <a onclick="show('brackets')" id="nav-brackets">Matchups</a>
     <a onclick="show('players')" id="nav-players">Players</a>
     <a onclick="show('info')" id="nav-info">Info</a>
+    <a onclick="show('bets')" id="nav-bets">Bets</a>
     <a onclick="show('admin')" id="nav-admin" class="admin-btn">⚙️ Admin</a>
   </div>
 </nav>
@@ -474,6 +502,25 @@
   </table>
 </section>
 
+
+<!-- BETS -->
+<section id="bets">
+  <div class="sec-title">Betting <span>Ledger</span></div><div class="sec-line"></div>
+  <div class="bet-summary">
+    <div class="bet-stat"><div class="bet-stat-label">Total Bets</div><div class="bet-stat-value" id="bet-count">0</div></div>
+    <div class="bet-stat"><div class="bet-stat-label">Amount Wagered</div><div class="bet-stat-value" id="bet-wagered">$0</div></div>
+    <div class="bet-stat"><div class="bet-stat-label">Settled Profit / Loss</div><div class="bet-stat-value" id="bet-profit">$0</div></div>
+    <div class="bet-stat"><div class="bet-stat-label">Open Liability</div><div class="bet-stat-value" id="bet-open">$0</div></div>
+  </div>
+  <div class="bet-table-wrap">
+    <table class="bet-table">
+      <thead><tr><th>Bettor</th><th>Bet</th><th>Odds</th><th>Risk</th><th>To Win</th><th>Status</th><th>Profit/Loss</th><th>Notes</th></tr></thead>
+      <tbody id="bets-table-body"></tbody>
+    </table>
+    <div class="empty-state" id="bets-empty" style="display:none">No bets have been entered yet.</div>
+  </div>
+</section>
+
 <!-- ADMIN -->
 <section id="admin">
   <div class="admin-login" id="admin-login">
@@ -517,6 +564,25 @@
       <div id="admin-matchups"></div>
       <button class="btn btn-gold" style="margin-top:8px" onclick="saveMatchups()">Save Matchups</button>
       <span class="save-notice" id="mu-saved">✓ Saved!</span>
+    </div>
+
+
+    <div class="admin-section">
+      <h3>Betting Ledger</h3>
+      <p style="color:#666;font-size:.75rem;font-weight:normal;margin-bottom:16px">Add, edit, settle, or remove bets. Profit/loss is calculated automatically from American odds.</p>
+      <div class="form-row">
+        <div class="form-group"><label>Bettor</label><input id="new-bet-bettor" placeholder="Player name"></div>
+        <div class="form-group"><label>Bet Description</label><input id="new-bet-description" placeholder="Team Red -2.5"></div>
+        <div class="form-group"><label>American Odds</label><input id="new-bet-odds" value="-110" placeholder="-110"></div>
+        <div class="form-group"><label>Amount Risked</label><input id="new-bet-amount" type="number" min="0" step="0.01" placeholder="25"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label><select id="new-bet-status"><option value="pending">Pending</option><option value="won">Won</option><option value="lost">Lost</option><option value="push">Push</option></select></div>
+        <div class="form-group"><label>Notes</label><input id="new-bet-notes" placeholder="Optional notes"></div>
+        <div class="form-group"><label>&nbsp;</label><button class="btn btn-gold" onclick="addBet()">Add Bet</button></div>
+      </div>
+      <div id="admin-bets-list" style="margin-top:20px"></div>
+      <span class="save-notice" id="bets-saved">✓ Bets updated!</span>
     </div>
 
     <div class="admin-section">
@@ -581,18 +647,29 @@ let state = {
   rounds: ROUNDS_DEF.map(r=>({...r,redScore:"—",blueScore:"—",status:"upcoming"})),
   matchups: MATCHUPS_DEF.map(m=>({...m,result:""})),
   players: PLAYERS_DEF.map(p=>({...p})),
-  records: Object.fromEntries(PLAYERS_DEF.map(p=>[p.name,"0-0-0"]))
+  records: Object.fromEntries(PLAYERS_DEF.map(p=>[p.name,"0-0-0"])),
+  bets: []
 };
 
-async function loadState() {
+function loadState() {
   try {
-    const r = await window.storage.get('bei-state-v2');
-    if(r) { const s=JSON.parse(r.value); state={...state,...s}; }
-  } catch(e){}
+    const raw = localStorage.getItem('bei-state-v3');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state = {...state, ...saved};
+      if (!Array.isArray(state.bets)) state.bets = [];
+    }
+  } catch (e) {
+    console.error('Unable to load saved site data:', e);
+  }
   renderAll();
 }
-async function saveState() {
-  try { await window.storage.set('bei-state-v2', JSON.stringify(state)); } catch(e){}
+function saveState() {
+  try {
+    localStorage.setItem('bei-state-v3', JSON.stringify(state));
+  } catch (e) {
+    console.error('Unable to save site data:', e);
+  }
 }
 
 // ── RENDER ─────────────────────────────────────────────────────────────
@@ -636,6 +713,7 @@ renderPlayerSection('red');
 renderPlayerSection('blue');
  updateHomeScore();
  renderDraftBoard();
+ renderBets();
 }
 function renderDraftBoard() {
   const pool = document.getElementById("draft-pool");
@@ -735,6 +813,124 @@ function renderPlayerSection(team) {
   }).join('');
 }
  
+
+function money(value) {
+  const n = Number(value) || 0;
+  return new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'}).format(n);
+}
+
+function normalizeOdds(value) {
+  const text = String(value ?? '').trim().toUpperCase();
+  if (text === 'EVEN' || text === 'EV') return 100;
+  const n = parseInt(text, 10);
+  return Number.isFinite(n) && n !== 0 ? n : -110;
+}
+
+function potentialWin(amount, odds) {
+  const risk = Number(amount) || 0;
+  const american = normalizeOdds(odds);
+  return american > 0 ? risk * american / 100 : risk * 100 / Math.abs(american);
+}
+
+function betProfit(bet) {
+  const amount = Number(bet.amount) || 0;
+  if (bet.status === 'won') return potentialWin(amount, bet.odds);
+  if (bet.status === 'lost') return -amount;
+  return 0;
+}
+
+function renderBets() {
+  const body = document.getElementById('bets-table-body');
+  if (!body) return;
+  const bets = Array.isArray(state.bets) ? state.bets : [];
+  const empty = document.getElementById('bets-empty');
+  body.innerHTML = bets.map(b => {
+    const win = potentialWin(b.amount, b.odds);
+    const profit = betProfit(b);
+    const profitClass = profit > 0 ? 'bet-positive' : profit < 0 ? 'bet-negative' : '';
+    return `<tr>
+      <td><strong>${escapeHTML(b.bettor || '—')}</strong></td>
+      <td>${escapeHTML(b.description || '—')}</td>
+      <td>${escapeHTML(String(b.odds || '—'))}</td>
+      <td>${money(b.amount)}</td>
+      <td>${money(win)}</td>
+      <td><span class="bet-status bet-status-${b.status || 'pending'}">${escapeHTML(b.status || 'pending')}</span></td>
+      <td class="${profitClass}">${money(profit)}</td>
+      <td>${escapeHTML(b.notes || '')}</td>
+    </tr>`;
+  }).join('');
+  empty.style.display = bets.length ? 'none' : 'block';
+  const wagered = bets.reduce((s,b)=>s+(Number(b.amount)||0),0);
+  const profit = bets.reduce((s,b)=>s+betProfit(b),0);
+  const open = bets.filter(b=>b.status==='pending').reduce((s,b)=>s+(Number(b.amount)||0),0);
+  document.getElementById('bet-count').textContent = bets.length;
+  document.getElementById('bet-wagered').textContent = money(wagered);
+  const profitEl = document.getElementById('bet-profit');
+  profitEl.textContent = money(profit);
+  profitEl.className = 'bet-stat-value ' + (profit > 0 ? 'bet-positive' : profit < 0 ? 'bet-negative' : '');
+  document.getElementById('bet-open').textContent = money(open);
+}
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+
+function addBet() {
+  const bettor = document.getElementById('new-bet-bettor').value.trim();
+  const description = document.getElementById('new-bet-description').value.trim();
+  const odds = document.getElementById('new-bet-odds').value.trim() || '-110';
+  const amount = Number(document.getElementById('new-bet-amount').value);
+  const status = document.getElementById('new-bet-status').value;
+  const notes = document.getElementById('new-bet-notes').value.trim();
+  if (!bettor || !description || !Number.isFinite(amount) || amount <= 0) {
+    alert('Enter a bettor, bet description, and an amount greater than zero.');
+    return;
+  }
+  state.bets.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7), bettor, description, odds, amount, status, notes});
+  ['new-bet-bettor','new-bet-description','new-bet-amount','new-bet-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('new-bet-odds').value='-110';
+  document.getElementById('new-bet-status').value='pending';
+  saveState(); renderAll(); buildAdminBets(); showNotice('bets-saved');
+}
+
+function buildAdminBets() {
+  const list = document.getElementById('admin-bets-list');
+  if (!list) return;
+  const bets = Array.isArray(state.bets) ? state.bets : [];
+  list.innerHTML = bets.length ? bets.map((b,i)=>`<div class="admin-bet-card">
+    <div class="admin-bet-card-head"><strong>Bet ${i+1}: ${escapeHTML(b.bettor)}</strong><button class="btn btn-sm btn-danger" onclick="removeBet('${b.id}')">Delete</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Bettor</label><input id="bet-bettor-${b.id}" value="${escapeHTML(b.bettor)}"></div>
+      <div class="form-group"><label>Description</label><input id="bet-desc-${b.id}" value="${escapeHTML(b.description)}"></div>
+      <div class="form-group"><label>Odds</label><input id="bet-odds-${b.id}" value="${escapeHTML(b.odds)}"></div>
+      <div class="form-group"><label>Amount</label><input id="bet-amount-${b.id}" type="number" min="0" step="0.01" value="${Number(b.amount)||0}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Status</label><select id="bet-status-${b.id}"><option value="pending" ${b.status==='pending'?'selected':''}>Pending</option><option value="won" ${b.status==='won'?'selected':''}>Won</option><option value="lost" ${b.status==='lost'?'selected':''}>Lost</option><option value="push" ${b.status==='push'?'selected':''}>Push</option></select></div>
+      <div class="form-group"><label>Notes</label><input id="bet-notes-${b.id}" value="${escapeHTML(b.notes||'')}"></div>
+      <div class="form-group"><label>&nbsp;</label><button class="btn btn-gold btn-sm" onclick="saveBet('${b.id}')">Save Changes</button></div>
+    </div>
+  </div>`).join('') : '<div class="empty-state">No bets entered.</div>';
+}
+
+function saveBet(id) {
+  const bet = state.bets.find(b=>b.id===id);
+  if (!bet) return;
+  bet.bettor = document.getElementById(`bet-bettor-${id}`).value.trim();
+  bet.description = document.getElementById(`bet-desc-${id}`).value.trim();
+  bet.odds = document.getElementById(`bet-odds-${id}`).value.trim() || '-110';
+  bet.amount = Number(document.getElementById(`bet-amount-${id}`).value) || 0;
+  bet.status = document.getElementById(`bet-status-${id}`).value;
+  bet.notes = document.getElementById(`bet-notes-${id}`).value.trim();
+  saveState(); renderAll(); buildAdminBets(); showNotice('bets-saved');
+}
+
+function removeBet(id) {
+  if (!confirm('Delete this bet?')) return;
+  state.bets = state.bets.filter(b=>b.id!==id);
+  saveState(); renderAll(); buildAdminBets(); showNotice('bets-saved');
+}
+
 // ── ADMIN ──────────────────────────────────────────────────────────────
 function adminLogin() {
   if(document.getElementById('admin-pw').value===ADMIN_PW) {
@@ -782,6 +978,7 @@ function buildAdminForms() {
       </select>
     </div>`).join('');
 
+  buildAdminBets();
   buildPlayerAdminCards();
 }
 
