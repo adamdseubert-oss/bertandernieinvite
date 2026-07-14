@@ -176,6 +176,67 @@
   .chevron{color:#666;font-size:.8rem;transition:transform .2s;}
   .chevron.open{transform:rotate(180deg);}
  /* HOME PAGE UPGRADES */
+.home-score-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);
+  align-items:stretch;
+  width:min(900px,100%);
+  margin:0 auto 28px;
+  border:2px solid #333;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 12px 34px rgba(0,0,0,.32);
+}
+.home-score-side{
+  min-height:150px;
+  padding:24px 18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.home-score-side.red{background:linear-gradient(135deg,#4a1010,#1a0505);}
+.home-score-side.blue{background:linear-gradient(135deg,#0b2350,#050d1a);}
+.home-score-team{
+  font-size:.8rem;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.home-score-side.red .home-score-team{color:#ff8a80;}
+.home-score-side.blue .home-score-team{color:#82aaff;}
+.home-score-number{font-size:4.75rem;line-height:.95;font-weight:900;}
+.home-score-side.red .home-score-number{color:#e74c3c;}
+.home-score-side.blue .home-score-number{color:#5b8fe5;}
+.home-score-divider{
+  background:#090d0a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--gold);
+  font-size:1rem;
+  letter-spacing:2px;
+  border-left:1px solid #333;
+  border-right:1px solid #333;
+}
+.home-score-divider span{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid #4a4a4a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#111;
+}
+@media(max-width:650px){
+  .home-score-hero{grid-template-columns:1fr 44px 1fr;}
+  .home-score-side{min-height:120px;padding:18px 8px;}
+  .home-score-team{font-size:.62rem;letter-spacing:1.5px;}
+  .home-score-number{font-size:3.35rem;}
+  .home-score-divider span{width:34px;height:34px;font-size:.78rem;}
+}
+
 .home-score{
   display:flex;justify-content:center;gap:40px;
   margin:30px 0;font-size:2rem;font-weight:bold;
@@ -358,10 +419,24 @@
     <img src="Logo.png" class="hero-logo" alt="Bert &amp; Ernie Invitational" onerror="this.style.display='none'">
     <div class="hero-tagline">"When Harry's Away... The Boys Will Still Play"</div>
     <div class="vs-bar">
-      <div class="team-badge team-a" id="hero-red-name">Team Red</div>
+      <div class="team-badge team-a" id="hero-red-name">Team Wizard</div>
       <div class="vs">VS</div>
-      <div class="team-badge team-b" id="hero-blue-name">Team Blue</div>
+      <div class="team-badge team-b" id="hero-blue-name">Team Blizzard</div>
     </div>
+
+    <!-- LIVE SCORE -->
+    <div class="home-score-hero">
+      <div class="home-score-side red">
+        <div class="home-score-team" id="home-red-name">Team Wizard</div>
+        <div class="home-score-number" id="home-red">0</div>
+      </div>
+      <div class="home-score-divider"><span>VS</span></div>
+      <div class="home-score-side blue">
+        <div class="home-score-team" id="home-blue-name">Team Blizzard</div>
+        <div class="home-score-number" id="home-blue">0</div>
+      </div>
+    </div>
+
     <div class="event-info">
       <div class="info-chip"><strong>Dates</strong>July 23–26, 2026</div>
       <div class="info-chip"><strong>Location</strong>Monument / Castle Rock, CO</div>
@@ -379,13 +454,6 @@
         <div class="countdown-unit"><div class="countdown-value" id="count-seconds">0</div><div class="countdown-name">Seconds</div></div>
       </div>
     </div>
-     <!-- LIVE SCORE -->
-<div class="home-score">
-  <div id="home-red">0</div>
-  <span>-</span>
-  <div id="home-blue">0</div>
-</div>
-
 <!-- HOME CARDS -->
 <div class="home-cards">
 
@@ -631,7 +699,7 @@ const PLAYERS_DEF = [
 
 // ── STATE ──────────────────────────────────────────────────────────────
 let state = {
-  redName:"Team Red", blueName:"Team Blue",
+  redName:"Team Wizard", blueName:"Team Blizzard",
   rounds: ROUNDS_DEF.map(r=>({...r,redScore:"—",blueScore:"—",status:"upcoming"})),
   matchups: MATCHUPS_DEF.map(m=>({...m,result:""})),
   players: PLAYERS_DEF.map(p=>({...p})),
@@ -671,8 +739,8 @@ function saveState() {
 
 // ── RENDER ─────────────────────────────────────────────────────────────
 function renderAll() {
-  ['hero-red-name','lb-red-name'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.redName;});
-  ['hero-blue-name','lb-blue-name'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.blueName;});
+  ['hero-red-name','lb-red-name','home-red-name'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.redName;});
+  ['hero-blue-name','lb-blue-name','home-blue-name'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.blueName;});
   document.getElementById('red-team-title').textContent='🔴 '+state.redName;
   document.getElementById('blue-team-title').textContent='🔵 '+state.blueName;
 
