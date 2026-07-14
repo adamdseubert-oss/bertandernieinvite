@@ -489,9 +489,9 @@
 <section id="leaderboard">
   <div class="sec-title">Live <span>Scores</span></div><div class="sec-line"></div>
   <div class="score-hero">
-    <div class="score-side red"><div class="score-team-name" id="lb-red-name">Team Red</div><div class="score-number" id="lb-red-score">0</div></div>
+    <div class="score-side red"><div class="score-team-name" id="lb-red-name">WIZARDS</div><div class="score-number" id="lb-red-score">0</div></div>
     <div class="score-divider"><span>Points</span></div>
-    <div class="score-side blue"><div class="score-team-name" id="lb-blue-name">Team Blue</div><div class="score-number" id="lb-blue-score">0</div></div>
+    <div class="score-side blue"><div class="score-team-name" id="lb-blue-name">BLIZZARDS</div><div class="score-number" id="lb-blue-score">0</div></div>
   </div>
   <div class="rounds-grid" id="rounds-display"></div>
   <p style="color:#555;font-size:.75rem;text-align:center;margin-top:24px;font-weight:normal">Win = 1 pt · Halve = ½ pt · Loss = 0 pts · 10½ pts needed to win The Cup</p>
@@ -508,11 +508,11 @@
   <div class="sec-title">The <span>Players</span></div><div class="sec-line"></div>
 <div class="players-split">
   <div>
-    <div class="team-section-title red" id="red-team-title">🔴 Team Red</div>
+    <div class="team-section-title red" id="red-team-title">🔴 WIZARDS</div>
     <div id="red-players" class="team-player-grid"></div>
   </div>
   <div>
-    <div class="team-section-title blue" id="blue-team-title">🔵 Team Blue</div>
+    <div class="team-section-title blue" id="blue-team-title">🔵 BLIZZARDS</div>
     <div id="blue-players" class="team-player-grid"></div>
   </div>
 </div>
@@ -604,8 +604,8 @@
     <div class="admin-section">
       <h3>Team Names</h3>
       <div class="form-row">
-        <div class="form-group"><label>Red Team Name</label><input id="a-red-name" placeholder="Team Red"></div>
-        <div class="form-group"><label>Blue Team Name</label><input id="a-blue-name" placeholder="Team Blue"></div>
+        <div class="form-group"><label>WIZARDS</label><input id="a-red-name" placeholder="WIZARDS"></div>
+        <div class="form-group"><label>BLIZZARDS</label><input id="a-blue-name" placeholder="BLIZZARDS"></div>
         <div class="form-group"><label>&nbsp;</label><button class="btn btn-gold" onclick="saveTeamNames()">Save</button><span class="save-notice" id="tn-saved">✓ Saved!</span></div>
       </div>
     </div>
@@ -1100,7 +1100,7 @@ function showNotice(id) {
   el.style.display='inline';
   setTimeout(()=>el.style.display='none',2500);
 }
-function saveTeamNames() { state.redName=document.getElementById('a-red-name').value||'Team Red'; state.blueName=document.getElementById('a-blue-name').value||'Team Blue'; saveState();renderAll();showNotice('tn-saved'); }
+function saveTeamNames() { state.redName=document.getElementById('a-red-name').value||'WIZARDS'; state.blueName=document.getElementById('a-blue-name').value||'BLIZZARDS'; saveState();renderAll();showNotice('tn-saved'); }
 function saveRounds() { state.rounds.forEach((r,i)=>{ const rv=document.getElementById(`r-red-${i}`).value,bv=document.getElementById(`r-blue-${i}`).value; r.redScore=rv===''?'—':rv; r.blueScore=bv===''?'—':bv; r.status=document.getElementById(`r-status-${i}`).value; }); saveState();renderAll();showNotice('rd-saved'); }
 function saveMatchups() {
   state.matchups.forEach((m,i) => {
